@@ -45,8 +45,8 @@ export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
       <p className="text-gray-600">The main engineering office is located on the first floor near the main entrance.</p>
       <div className="grid grid-cols-2 gap-4">
         <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">General Inquiries</div><div className="font-semibold text-lg">Room E-123</div></div>
-        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">Phone</div><div className="font-semibold text-lg">(506) 453-4500</div></div>
-        <div className="p-4 bg-gray-50 rounded-lg col-span-2"><div className="text-sm text-gray-500 mb-1">Email</div><div className="font-semibold text-lg">headhall@unb.ca</div></div>
+        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">Phone</div><div className="font-semibold text-lg">(506) 453-4570</div></div>
+        <div className="p-4 bg-gray-50 rounded-lg col-span-2"><div className="text-sm text-gray-500 mb-1">Email</div><div className="font-semibold text-lg">engineer@unb.ca</div></div>
       </div>
     </div>
   )},
@@ -55,7 +55,8 @@ export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
       <div className="p-4 bg-red-50 border-l-4 border-[#C41230] rounded-r-lg">
         <div className="font-bold text-[#C41230] text-lg mb-1">Campus Security</div>
         <div className="text-2xl font-black text-[#C41230]">(506) 453-4830</div>
-        <div className="text-sm text-red-800 mt-1">Available 24/7. Use any red emergency phone.</div>
+        <div className="text-sm text-red-800 mt-1">security@unb.ca</div>
+        <div className="text-sm text-red-800 mt-1">Available 24/7. For immediate emergencies, call 911 first.</div>
       </div>
       <div className="grid grid-cols-1 gap-3">
         <div className="flex items-center gap-3 p-3 bg-white border rounded-lg">
