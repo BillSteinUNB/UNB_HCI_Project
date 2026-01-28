@@ -33,8 +33,8 @@ export const MapScreen: React.FC = () => {
         <div className="relative w-full h-full max-w-4xl max-h-[80vh] bg-white rounded-3xl shadow-xl border-4 border-white transform transition-transform duration-500 flex items-center justify-center group">
           <div className="absolute top-8 left-8 flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 shadow-sm z-10"><Compass className="w-5 h-5 text-[#C41230]" /><span className="font-bold text-gray-600">Level {level}</span></div>
           <img src={floorMaps[level]} alt={`Floor ${level} Plan`} className="max-w-full max-h-full object-contain" />
-          {level === 'B' && (
-            <div className="absolute bottom-1/4 left-1/3 flex flex-col items-center animate-bounce">
+          {level === 'C' && (
+            <div className="absolute bottom-1/4 left-[10%] flex flex-col items-center animate-bounce">
               <div className="bg-[#C41230] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg mb-1 whitespace-nowrap">You Are Here</div>
               <MapPinFilled />
             </div>
