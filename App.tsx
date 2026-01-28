@@ -47,7 +47,7 @@ const App: React.FC = () => {
       {currentScreen !== ScreenName.HOME && (
         <Header title={getScreenTitle()} onBack={goBack} onHome={goHome} showBack={history.length > 1} />
       )}
-      <div className="flex-1 overflow-hidden relative">{renderScreen()}</div>
+      <div className="flex-1 relative">{renderScreen()}</div>
     </div>
   );
 };
