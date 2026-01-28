@@ -6,20 +6,66 @@ export const UNB_RED = '#C41230';
 export const UNB_BLACK = '#1A1A1A';
 
 export const MOCK_ROOMS: Room[] = [
-  { id: "e101", number: "E-101", type: "Lecture Hall", floor: 1, capacity: 120, features: ["Projector", "Whiteboard", "Accessible", "Tiered Seating"], currentStatus: 'busy', schedule: [
-    { time: "09:00-10:30", course: "C-34A", name: "Intro to Programming" },
-    { time: "11:00-12:30", course: "C-18A", name: "Circuits I" },
-    { time: "14:00-15:30", course: "C-15A", name: "Thermodynamics", active: true },
-    { time: "16:00-17:30", course: "C-15D", name: "Statics" }
+  { id: "b8", number: "B-8", type: "Classroom", floor: "B", capacity: 30, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "b17", number: "B-17", type: "Classroom", floor: "B", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "b24", number: "B-24", type: "Classroom", floor: "B", capacity: 35, features: ["Projector", "Whiteboard"], currentStatus: 'busy', schedule: [
+    { time: "09:00-10:30", course: "C-34A", name: "Intro to Programming" }
   ]},
-  { id: "e105", number: "E-105", type: "Computer Lab", floor: 1, capacity: 40, features: ["40 Workstations", "Printer", "Scanner"], currentStatus: 'available', schedule: [
-    { time: "08:30-11:30", course: "C-14A", name: "Software Engineering I" },
-    { time: "13:30-16:30", course: "C-14B", name: "Operating Systems" }
+  { id: "c307", number: "307", type: "Classroom", floor: "C", capacity: 40, features: ["Projector", "Whiteboard"], currentStatus: 'busy', schedule: [
+    { time: "11:00-12:30", course: "C-18A", name: "Circuits I", active: true }
   ]},
-  { id: "e110", number: "E-110", type: "Faculty Office", floor: 1, capacity: 3, professor: "Dr. Sarah Smith", features: ["Office Hours: Mon/Wed 10-12"], currentStatus: 'available', schedule: [] },
-  { id: "e204", number: "E-204", type: "Study Room", floor: 2, capacity: 8, features: ["Whiteboard", "TV Screen", "Power Outlets"], currentStatus: 'available', schedule: [{ time: "18:00-21:00", course: "C-34A", name: "Finals Prep" }] },
-  { id: "hc12", number: "HC-12", type: "Lecture Hall", floor: 0, capacity: 200, features: ["Projector", "Sound System"], currentStatus: 'busy', schedule: [{ time: "13:00-14:30", course: "C-18A", name: "Calculus II" }] },
-  { id: "e301", number: "E-301", type: "Chemical Eng Lab", floor: 3, capacity: 25, features: ["Fume Hoods", "Safety Shower"], currentStatus: 'available', schedule: [] }
+  { id: "c314", number: "314", type: "Classroom", floor: "C", capacity: 35, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "c315", number: "315", type: "Classroom", floor: "C", capacity: 30, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c317", number: "317", type: "Classroom", floor: "C", capacity: 40, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c127a", number: "C127A", type: "Classroom", floor: "C", capacity: 20, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c127", number: "C127", type: "Classroom", floor: "C", capacity: 25, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "c122", number: "C122", type: "Classroom", floor: "C", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c112", number: "C112", type: "Classroom", floor: "C", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c111", number: "C111", type: "Classroom", floor: "C", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c9", number: "C-9", type: "Classroom", floor: "C", capacity: 20, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c10", number: "C-10", type: "Classroom", floor: "C", capacity: 20, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c11", number: "C-11", type: "Classroom", floor: "C", capacity: 25, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "c13", number: "C-13", type: "Classroom", floor: "C", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c24", number: "C-24", type: "Classroom", floor: "C", capacity: 35, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c25", number: "C-25", type: "Classroom", floor: "C", capacity: 30, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "c28", number: "C-28", type: "Classroom", floor: "C", capacity: 25, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "readingroom", number: "Reading Room", type: "Study Space", floor: "C", capacity: 50, features: ["Quiet Study", "Power Outlets"], currentStatus: 'available', schedule: [] },
+  { id: "studyhall", number: "Study Hall", type: "Study Space", floor: "C", capacity: 100, features: ["Group Study", "Power Outlets"], currentStatus: 'available', schedule: [] },
+  { id: "c124", number: "C124", type: "Eng. Student Lounge", floor: "C", capacity: 60, features: ["Seating", "Microwave", "Vending"], currentStatus: 'available', schedule: [] },
+  { id: "csoffice", number: "Comp. Sci. Office", type: "Office", floor: "C", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "c123", number: "C123", type: "EUS & Society Offices", floor: "C", capacity: 10, features: ["Meeting Space"], currentStatus: 'available', schedule: [] },
+  { id: "deanoffice", number: "Dean of Engineering Office", type: "Office", floor: "C", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "d414", number: "414", type: "Classroom", floor: "D", capacity: 40, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d415", number: "415", type: "Classroom", floor: "D", capacity: 35, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "d124a", number: "D124A", type: "Classroom", floor: "D", capacity: 20, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d124", number: "D124", type: "Classroom", floor: "D", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d110", number: "D110", type: "Classroom", floor: "D", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d108", number: "D108", type: "Classroom", floor: "D", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d118", number: "D118", type: "Classroom", floor: "D", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d117", number: "D117", type: "Classroom", floor: "D", capacity: 30, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "d33", number: "D33", type: "Classroom", floor: "D", capacity: 35, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d124old", number: "124", type: "Old Head Hall Room", floor: "D", capacity: 30, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d128old", number: "128", type: "Old Head Hall Room", floor: "D", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "d135old", number: "135", type: "Old Head Hall Room", floor: "D", capacity: 30, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "headrest", number: "Head Rest", type: "Study Space", floor: "D", capacity: 40, features: ["Seating", "Coffee"], currentStatus: 'available', schedule: [] },
+  { id: "itsreception", number: "ITS Reception", type: "Service Desk", floor: "D", capacity: 5, features: ["Tech Support"], currentStatus: 'available', schedule: [] },
+  { id: "eceoffice", number: "Electrical and Computer Office", type: "Office", floor: "D", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "coopoffice", number: "Co-op Office", type: "Office", floor: "D", capacity: 5, features: ["Advising"], currentStatus: 'available', schedule: [] },
+  { id: "civiloffice", number: "Civil Office", type: "Office", floor: "D", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "chemoffice", number: "Chemical Office", type: "Office", floor: "D", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "e211", number: "211", type: "Classroom", floor: "E", capacity: 35, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "e214", number: "214", type: "Classroom", floor: "E", capacity: 30, features: ["Whiteboard", "Projector"], currentStatus: 'available', schedule: [] },
+  { id: "e224", number: "224", type: "Classroom", floor: "E", capacity: 40, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [
+    { time: "14:00-15:30", course: "C-15A", name: "Thermodynamics", active: true }
+  ]},
+  { id: "e225", number: "225", type: "Classroom", floor: "E", capacity: 35, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "e4", number: "E-4", type: "Classroom", floor: "E", capacity: 25, features: ["Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "e11", number: "E-11", type: "Classroom", floor: "E", capacity: 30, features: ["Projector", "Whiteboard"], currentStatus: 'available', schedule: [] },
+  { id: "cssquare", number: "CS Square", type: "Study Space", floor: "E", capacity: 80, features: ["Seating", "Power Outlets", "Collaboration"], currentStatus: 'available', schedule: [] },
+  { id: "cic", number: "Canadian Institute for Cybersecurity", type: "Research Space", floor: "E", capacity: 20, features: ["Research Lab"], currentStatus: 'available', schedule: [] },
+  { id: "tmeoffice", number: "TME Office", type: "Office", floor: "E", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "mechoffice", number: "Mechanical Office", type: "Office", floor: "E", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] },
+  { id: "geomaticsoffice", number: "Geomatics and Geodesy Office", type: "Office", floor: "E", capacity: 5, features: ["Office Hours"], currentStatus: 'available', schedule: [] }
 ];
 
 export const MOCK_EVENTS: Event[] = [

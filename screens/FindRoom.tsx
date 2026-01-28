@@ -8,8 +8,8 @@ interface FindRoomProps { onNavigate: (screen: ScreenName, params?: any) => void
 
 export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
   const [query, setQuery] = useState('');
-  const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
-  const floors = [1, 2, 3];
+  const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
+  const floors = ['B', 'C', 'D', 'E'];
 
   const filteredRooms = useMemo(() => {
     let results = MOCK_ROOMS;
@@ -29,9 +29,9 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
           <input type="text" className="block w-full pl-16 pr-6 py-5 border-2 border-gray-200 rounded-2xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#C41230] text-2xl font-medium transition-colors" placeholder="Search room number or professor..." value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          <button onClick={() => setSelectedFloor(null)} className={`px-6 py-3 rounded-xl text-lg font-bold transition-all whitespace-nowrap active:scale-95 ${selectedFloor === null ? 'bg-[#1A1A1A] text-white shadow-md' : 'bg-gray-100 text-gray-600'}`}>All Floors</button>
+          <button onClick={() => setSelectedFloor(null)} className={`px-6 py-3 rounded-xl text-lg font-bold transition-all whitespace-nowrap active:scale-95 ${selectedFloor === null ? 'bg-[#1A1A1A] text-white shadow-md' : 'bg-gray-100 text-gray-600'}`}>All Levels</button>
           {floors.map(floor => (
-            <button key={floor} onClick={() => setSelectedFloor(floor)} className={`px-6 py-3 rounded-xl text-lg font-bold transition-all whitespace-nowrap active:scale-95 ${selectedFloor === floor ? 'bg-[#C41230] text-white shadow-md' : 'bg-gray-100 text-gray-600'}`}>Floor {floor}</button>
+            <button key={floor} onClick={() => setSelectedFloor(floor)} className={`px-6 py-3 rounded-xl text-lg font-bold transition-all whitespace-nowrap active:scale-95 ${selectedFloor === floor ? 'bg-[#C41230] text-white shadow-md' : 'bg-gray-100 text-gray-600'}`}>Level {floor}</button>
           ))}
         </div>
       </div>
@@ -40,7 +40,7 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
         {filteredRooms.length > 0 ? (
           <div className="space-y-4">
             {filteredRooms.map((room) => (
-              <ListItem key={room.id} title={room.number} subtitle={room.type} meta={`Floor ${room.floor}`} onClick={() => onNavigate(ScreenName.ROOM_DETAIL, { roomId: room.id })} rightElement={room.professor ? <div className="flex items-center gap-2 text-gray-500 bg-gray-100 px-3 py-1 rounded-lg text-sm font-semibold"><User className="w-4 h-4"/> {room.professor}</div> : null} />
+              <ListItem key={room.id} title={room.number} subtitle={room.type} meta={`Level ${room.floor}`} onClick={() => onNavigate(ScreenName.ROOM_DETAIL, { roomId: room.id })} rightElement={room.professor ? <div className="flex items-center gap-2 text-gray-500 bg-gray-100 px-3 py-1 rounded-lg text-sm font-semibold"><User className="w-4 h-4"/> {room.professor}</div> : null} />
             ))}
           </div>
         ) : (

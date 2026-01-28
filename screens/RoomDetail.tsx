@@ -23,8 +23,8 @@ export const RoomDetailScreen: React.FC<RoomDetailProps> = ({ roomId, onNavigate
               </svg>
             </div>
             <MapPin className="w-16 h-16 text-[#C41230] z-10 animate-bounce" />
-            <div className="z-10 mt-4 font-bold text-xl">Floor {room.floor}</div>
-            <div className="z-10 text-gray-400">East Wing</div>
+            <div className="z-10 mt-4 font-bold text-xl">Level {room.floor}</div>
+            <div className="z-10 text-gray-400">Head Hall</div>
             <button onClick={() => onNavigate(ScreenName.MAPS)} className="absolute bottom-6 px-6 py-2 bg-white text-black rounded-full text-sm font-bold shadow-lg active:scale-95 transition-transform">View Full Map</button>
           </Card>
           <Card>
