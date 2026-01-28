@@ -86,13 +86,27 @@ export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
       </div>
     </div>
   )},
-  { id: 'contact', title: 'Contact & Help Desk', icon: <Phone className="w-6 h-6" />, content: (
+  { id: 'contact', title: 'IT Service Desk', icon: <Phone className="w-6 h-6" />, content: (
     <div className="space-y-3">
-      <p className="text-gray-600">The main engineering office is located on the first floor near the main entrance.</p>
+      <div className="mb-4">
+        <h4 className="font-bold text-lg mb-2">Fall/Winter Hours</h4>
+        <div className="space-y-1 text-gray-700">
+          <div>Monday - Friday: 8 a.m. - 8 p.m.</div>
+          <div>Weekends + Holidays: 10 a.m. - 4:30 p.m.</div>
+          <p className="text-sm text-gray-600 mt-2 italic">*In-person support is available during evening, weekend and holiday hours at the Fredericton HIL Service Desk only.</p>
+        </div>
+      </div>
+      <div className="mb-4">
+        <h4 className="font-bold text-lg mb-2">Summer Hours</h4>
+        <div className="space-y-1 text-gray-700">
+          <div>Monday - Friday: 8 a.m. - 4:30 p.m.</div>
+          <div>Weekends + Holidays: 10 a.m. - 4:30 p.m. (email and phone support only)</div>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">General Inquiries</div><div className="font-semibold text-lg">Room E-123</div></div>
-        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">Phone</div><div className="font-semibold text-lg">(506) 453-4570</div></div>
-        <div className="p-4 bg-gray-50 rounded-lg col-span-2"><div className="text-sm text-gray-500 mb-1">Email</div><div className="font-semibold text-lg">engineer@unb.ca</div></div>
+        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">Location</div><div className="font-semibold text-lg">Harriet Irving Library 1st floor</div></div>
+        <div className="p-4 bg-gray-50 rounded-lg"><div className="text-sm text-gray-500 mb-1">Phone</div><div className="font-semibold text-lg">(506) 939-3131</div></div>
+        <div className="p-4 bg-gray-50 rounded-lg col-span-2"><div className="text-sm text-gray-500 mb-1">Email</div><div className="font-semibold text-lg">itservicedesk@unb.ca</div></div>
       </div>
     </div>
   )},
@@ -118,10 +132,21 @@ export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
   )},
   { id: 'parking', title: 'Parking & Accessibility', icon: <Car className="w-6 h-6" />, content: (
     <div className="space-y-3">
-      <p className="text-gray-600">Accessible parking is available directly in front of the main entrance (Head Hall Service Rd).</p>
-      <div className="flex gap-4">
-        <div className="flex-1 p-4 bg-blue-50 text-blue-900 rounded-lg"><div className="font-bold mb-1">Student Parking</div><div className="text-sm">Lot 15 & 16 (Red Permit)</div></div>
-        <div className="flex-1 p-4 bg-gray-100 text-gray-900 rounded-lg"><div className="font-bold mb-1">Visitor Parking</div><div className="text-sm">Pay & Display (Main Loop)</div></div>
+      <p className="text-gray-600">All parking on campus requires a valid permit or parking session through HotSpot. Accessible parking spaces are available throughout campus for those with provincial disability placards.</p>
+      <div className="space-y-3">
+        <div className="p-4 bg-blue-50 text-blue-900 rounded-lg">
+          <div className="font-bold mb-1">Faculty/Staff & Student Parking</div>
+          <div className="text-sm">Purchase long-term permits through HotSpot portal and app. Valid in designated faculty, staff, student, residence, or general parking areas.</div>
+        </div>
+        <div className="p-4 bg-gray-100 text-gray-900 rounded-lg">
+          <div className="font-bold mb-1">Visitor Parking</div>
+          <div className="text-sm">Designated visitor spaces (1 hour max) or general lots (hourly/daily) via HotSpot app or pay-by-plate machines.</div>
+        </div>
+        <div className="p-4 bg-gray-50 text-gray-700 rounded-lg">
+          <div className="font-bold mb-1">Questions?</div>
+          <div className="text-sm">Email: parking@unb.ca (Mon-Fri 8am-4pm)</div>
+          <div className="text-sm">Urgent: (506) 453-4830</div>
+        </div>
       </div>
     </div>
   )}
