@@ -6,11 +6,11 @@ import CLevel from '../CLevel.png';
 import DLevel from '../DLevel.png';
 import ELevel from '../ELevel.png';
 
-const floorMaps: Record<string, string> = {
-  'B': BLevel,
-  'C': CLevel,
-  'D': DLevel,
-  'E': ELevel
+const floorMaps = {
+  B: BLevel,
+  C: CLevel,
+  D: DLevel,
+  E: ELevel
 };
 
 export const MapScreen: React.FC = () => {

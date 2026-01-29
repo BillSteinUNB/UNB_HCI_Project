@@ -13,10 +13,14 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
 
   const filteredRooms = useMemo(() => {
     let results = MOCK_ROOMS;
-    if (selectedFloor !== null) results = results.filter(r => r.floor === selectedFloor);
+    if (selectedFloor) results = results.filter(r => r.floor === selectedFloor);
     if (query.trim()) {
       const q = query.toLowerCase();
-      results = results.filter(r => r.number.toLowerCase().includes(q) || r.type.toLowerCase().includes(q) || r.professor?.toLowerCase().includes(q));
+      results = results.filter(r => 
+        r.number.toLowerCase().includes(q) || 
+        r.type.toLowerCase().includes(q) || 
+        r.professor?.toLowerCase().includes(q)
+      );
     }
     return results;
   }, [query, selectedFloor]);

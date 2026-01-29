@@ -9,7 +9,6 @@ interface RoomDetailProps { roomId: string; onNavigate: (screen: ScreenName) => 
 export const RoomDetailScreen: React.FC<RoomDetailProps> = ({ roomId, onNavigate }) => {
   const room = MOCK_ROOMS.find(r => r.id === roomId);
   if (!room) return <div className="p-12 text-2xl">Room not found</div>;
-  const currentClass = room.schedule.find(s => s.active);
 
   return (
     <ScreenContainer className="bg-gray-50 p-6 space-y-6">
