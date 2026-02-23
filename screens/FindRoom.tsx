@@ -19,7 +19,8 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
       results = results.filter(r => 
         r.number.toLowerCase().includes(q) || 
         r.type.toLowerCase().includes(q) || 
-        r.professor?.toLowerCase().includes(q)
+        r.professor?.toLowerCase().includes(q) ||
+        r.officeTitle?.toLowerCase().includes(q)
       );
     }
     return results;

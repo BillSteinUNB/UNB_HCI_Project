@@ -24,6 +24,7 @@ export interface Room {
   floor: string;
   capacity: number;
   professor?: string;
+  officeTitle?: string;
   features: string[];
   schedule: ScheduleItem[];
   currentStatus?: 'available' | 'busy';
