@@ -465,7 +465,7 @@
     ];
 
     const levelConfig = {
-      minZoom: 1.5,
+      minZoom: 1,
       maxZoom: 5,
       zoomSnap: 0.1,
       zoomDelta: 0.25,
@@ -778,7 +778,7 @@
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
         if (state.maps[i]) {
-          state.maps[i].fitBounds([[0, 0], [90, 180]]);
+          state.maps[i].fitBounds([[0, 0], [90, 180]], { paddingTopLeft: [20, 10], paddingBottomRight: [40, 10] });
           state.maps[i].closePopup();
         }
       }
@@ -1264,7 +1264,7 @@
       for (const level of LEVELS) {
         const map = L.map(level.mapId, levelConfig);
         L.imageOverlay(level.floor, imageBounds, imageOverlayOptions).addTo(map);
-        map.fitBounds(imageBounds);
+        map.fitBounds(imageBounds, { paddingTopLeft: [20, 10], paddingBottomRight: [40, 10] });
         state.maps[level.idx] = map;
 
         L.easyButton({
