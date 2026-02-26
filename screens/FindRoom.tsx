@@ -16,26 +16,26 @@ const OnScreenKeyboard: React.FC<{
   onClear: () => void;
   onClose: () => void;
 }> = ({ onKey, onBackspace, onClear, onClose }) => (
-  <div className="bg-gray-100 border-t-2 border-gray-200 p-4 pb-6 shadow-inner">
-    <div className="max-w-3xl mx-auto space-y-2">
+  <div className="fixed bottom-0 left-0 right-0 bg-gray-100 border-t-2 border-gray-300 px-3 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] z-50">
+    <div className="max-w-2xl mx-auto space-y-1">
       {KEYBOARD_ROWS.map((row, ri) => (
-        <div key={ri} className="flex justify-center gap-1.5">
+        <div key={ri} className="flex justify-center gap-1">
           {row.map((key) => (
-            <button key={key} onClick={() => onKey(key)} className="w-14 h-14 bg-white rounded-xl border border-gray-200 shadow-sm text-xl font-bold text-gray-800 active:bg-gray-200 active:scale-95 transition-all">
+            <button key={key} onClick={() => onKey(key)} className="w-10 h-10 bg-white rounded-lg border border-gray-200 shadow-sm text-base font-bold text-gray-800 active:bg-gray-200 active:scale-95 transition-all">
               {key}
             </button>
           ))}
           {ri === 3 && (
-            <button onClick={onBackspace} className="w-20 h-14 bg-gray-200 rounded-xl border border-gray-300 shadow-sm text-sm font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all flex items-center justify-center gap-1">
-              <Delete className="w-5 h-5" />
+            <button onClick={onBackspace} className="w-16 h-10 bg-gray-200 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all flex items-center justify-center">
+              <Delete className="w-4 h-4" />
             </button>
           )}
         </div>
       ))}
-      <div className="flex justify-center gap-1.5 mt-1">
-        <button onClick={onClear} className="px-6 h-14 bg-gray-200 rounded-xl border border-gray-300 shadow-sm text-sm font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all">Clear</button>
-        <button onClick={() => onKey(' ')} className="flex-1 max-w-md h-14 bg-white rounded-xl border border-gray-200 shadow-sm text-lg font-bold text-gray-500 active:bg-gray-200 active:scale-95 transition-all">Space</button>
-        <button onClick={onClose} className="px-6 h-14 bg-[#C41230] rounded-xl shadow-sm text-sm font-bold text-white active:bg-[#9E0E27] active:scale-95 transition-all">Done</button>
+      <div className="flex justify-center gap-1">
+        <button onClick={onClear} className="px-4 h-10 bg-gray-200 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all">Clear</button>
+        <button onClick={() => onKey(' ')} className="flex-1 max-w-xs h-10 bg-white rounded-lg border border-gray-200 shadow-sm text-sm font-bold text-gray-500 active:bg-gray-200 active:scale-95 transition-all">Space</button>
+        <button onClick={onClose} className="px-5 h-10 bg-[#C41230] rounded-lg shadow-sm text-xs font-bold text-white active:bg-[#9E0E27] active:scale-95 transition-all">Done</button>
       </div>
     </div>
   </div>
@@ -101,7 +101,7 @@ export const FindRoomScreen: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-6 pb-24">
+      <div className={`flex-1 overflow-y-auto p-6 ${showKeyboard ? 'pb-64' : 'pb-24'}`}>
         <h3 className="text-gray-500 font-bold uppercase tracking-wider text-sm mb-4 ml-1">{filteredRooms.length} Results Found</h3>
         {filteredRooms.length > 0 ? (
           <div className="space-y-4">
