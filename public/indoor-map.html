@@ -20,6 +20,10 @@
       border: none;
     }
 
+    .leaflet-top.leaflet-right {
+      right: 10px;
+    }
+
     #ELevel, #DLevel, #CLevel, #BLevel {
       height: calc(100vh - 270px);
       width: 100%;
@@ -32,7 +36,7 @@
     input[type=text] {
       border: none;
       border-bottom: 1px solid purple;
-      width: 300px;
+      width: 220px;
       background-color: #f5f5f5;
     }
 
@@ -306,11 +310,21 @@
     <div id="nav02" style="background-color:#F5F5F5; padding:0 15px">
       <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
       <br>
-      <p style="font-size:15px; font-family:'Courier New'; text-align:center">(Enter at least two characters)</p>
-      <div style="text-align:center">
-        From <br> <input type="text" id="from"> <input type="reset" id="fromReset" value="x">
-        <br><i class="fas fa-sort" id="swap" style="cursor:pointer; font-size:25px; padding-top:10px"></i><br>
-        To <br> <input type="text" id="to"> <input type="reset" id="toReset" value="x">
+      <p style="font-size:13px; font-family:'Courier New'; text-align:left; color:#888; margin-bottom:8px">(Enter at least two characters)</p>
+      <div style="text-align:left">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
+          <label style="font-weight:700; min-width:38px; font-size:14px">From</label>
+          <input type="text" id="from" style="flex:1">
+          <input type="reset" id="fromReset" value="x" style="flex-shrink:0">
+        </div>
+        <div style="display:flex; justify-content:flex-end; padding:2px 0">
+          <i class="fas fa-exchange-alt fa-rotate-90" id="swap" style="cursor:pointer; font-size:18px; color:#666; padding:4px 8px; border-radius:4px; background:#e0e0e0"></i>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:4px">
+          <label style="font-weight:700; min-width:38px; font-size:14px">To</label>
+          <input type="text" id="to" style="flex:1">
+          <input type="reset" id="toReset" value="x" style="flex-shrink:0">
+        </div>
       </div>
       <br>
       <div style="display:flex; justify-content:center">
@@ -779,7 +793,7 @@
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
         if (state.maps[i]) {
-          state.maps[i].fitBounds([[0, 0], [90, 180]], { paddingTopLeft: [20, 10], paddingBottomRight: [40, 10] });
+          state.maps[i].fitBounds([[0, 0], [90, 180]], { paddingTopLeft: [60, 10], paddingBottomRight: [20, 10] });
           state.maps[i].closePopup();
         }
       }
@@ -1267,7 +1281,7 @@
       for (const level of LEVELS) {
         const map = L.map(level.mapId, levelConfig);
         L.imageOverlay(level.floor, imageBounds, imageOverlayOptions).addTo(map);
-        map.fitBounds(imageBounds, { paddingTopLeft: [20, 10], paddingBottomRight: [40, 10] });
+        map.fitBounds(imageBounds, { paddingTopLeft: [60, 10], paddingBottomRight: [20, 10] });
         state.maps[level.idx] = map;
 
         L.control.zoom({ position: 'topright' }).addTo(map);
