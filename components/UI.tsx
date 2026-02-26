@@ -4,7 +4,7 @@ import { ArrowLeft, Home, ChevronRight } from 'lucide-react';
 interface HeaderProps { title: string; onBack: () => void; onHome: () => void; showBack?: boolean; }
 
 export const Header: React.FC<HeaderProps> = ({ title, onBack, onHome, showBack = true }) => (
-  <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10">
+  <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10 sticky top-0">
     <div className="flex items-center w-1/4">
       {showBack && (
         <button onClick={onBack} className="flex items-center gap-2 px-6 py-3 bg-gray-100 rounded-lg active:bg-gray-200 active:scale-95 transition-all text-lg font-medium text-gray-700 touch-active" aria-label="Go Back">
