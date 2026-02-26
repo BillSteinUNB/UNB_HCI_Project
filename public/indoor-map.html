@@ -21,12 +21,12 @@
     }
 
     #ELevel, #DLevel, #CLevel, #BLevel {
-      height: 55vh;
+      height: calc(100vh - 310px);
       width: 100%;
     }
 
     .carousel-inner, .carousel-inner .item {
-      height: 55vh;
+      height: calc(100vh - 310px);
     }
 
     input[type=text] {
@@ -129,73 +129,79 @@
       padding-top: 9px;
     }
 
-    .level-bar {
+    .level-cubes {
       display: flex;
+      gap: 8px;
+      padding: 10px 15px;
+      justify-content: center;
+      background: #f5f5f5;
       border-bottom: 1px solid #ccc;
     }
 
-    .level-bar a {
+    .level-cubes a {
       flex: 1;
-      text-align: center;
-      padding: 8px 0;
-      font-size: 13px;
-      font-weight: 600;
+      max-width: 72px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
       color: #333;
+      background: #e0e0e0;
+      border-radius: 10px;
       cursor: pointer;
-      background: #e8e8e8;
-      border-right: 1px solid #ccc;
       text-decoration: none;
+      border: 2px solid transparent;
+      transition: all 0.15s;
     }
 
-    .level-bar a:last-child {
-      border-right: none;
-    }
-
-    .level-bar a:hover {
+    .level-cubes a:hover {
       background: #d0d0d0;
     }
 
-    .level-bar a.active-level {
+    .level-cubes a.active-level {
       background: #009688;
       color: #fff;
+      border-color: #00796b;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    .map-legend {
-      padding: 10px 15px;
-      font-size: 12px;
-      border-top: 1px solid #ddd;
-      background: #fafafa;
+    .w3-bar.w3-black .w3-bar-item {
+      font-size: 22px;
+      padding: 16px 0;
+    }
+
+    #cmap {
+      position: relative;
+    }
+
+    #continue-overlay {
+      display: none;
       position: absolute;
-      bottom: 0;
-      width: 100%;
+      bottom: 16px;
+      right: 16px;
+      z-index: 1000;
     }
 
-    .map-legend .legend-title {
+    #continue-overlay button {
+      background: #2196F3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 24px;
+      font-size: 16px;
       font-weight: 700;
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-
-    .map-legend .legend-item {
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 3px;
+      gap: 8px;
+      transition: background 0.15s;
     }
 
-    .map-legend .legend-swatch {
-      display: inline-block;
-      width: 18px;
-      height: 4px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
-    .map-legend .legend-icon {
-      width: 16px;
-      text-align: center;
-      flex-shrink: 0;
-      font-size: 11px;
+    #continue-overlay button:hover {
+      background: #1976D2;
     }
 
     @media screen and (max-width: 800px) {
@@ -270,7 +276,7 @@
   <script src="https://cdn.jsdelivr.net/npm/metismenu@3.0.4/dist/metisMenu.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2.4.0/src/easy-button.js"></script>
 
-  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:375px;border:1px groove black" id="mySidebar">
+  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:395px;border:1px groove black" id="mySidebar">
     <div class="w3-bar w3-black w3-center">
       <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav01i" onclick="openNav('nav01')"><i class="fas fa-search"></i><span class="sr-only">Search</span></a>
       <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav02i" onclick="openNav('nav02')"><i class="fas fa-directions"></i><span class="sr-only">Routing</span></a>
@@ -278,14 +284,14 @@
       <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" onclick="clearFunc()"><i class="fas fa-eraser"></i><span class="sr-only">Clear</span></a>
     </div>
 
-    <div class="level-bar">
-      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E Level</a>
-      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D Level</a>
-      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C Level</a>
-      <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B Level</a>
+    <div class="level-cubes">
+      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E</a>
+      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
+      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C</a>
+      <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B</a>
     </div>
 
-    <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding-left:20px">
+    <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding:0 15px">
       <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
       <br>
       <p style="font-size:15px; font-family:'Courier New'">(Enter at least two characters)</p>
@@ -297,16 +303,17 @@
       <div id="srchResult"></div>
     </div>
 
-    <div id="nav02" style="background-color:#F5F5F5; padding-left:20px">
+    <div id="nav02" style="background-color:#F5F5F5; padding:0 15px">
       <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
       <br>
-      <p style="font-size:15px; font-family:'Courier New'">(Enter at least two characters)</p>
-      From <br> <input type="text" id="from"> <input type="reset" id="fromReset" value="x">
-      <i class="fas fa-sort" id="swap" style="cursor:pointer; font-size:25px; padding-left:310px; padding-top:20px"></i>
+      <p style="font-size:15px; font-family:'Courier New'; text-align:center">(Enter at least two characters)</p>
+      <div style="text-align:center">
+        From <br> <input type="text" id="from"> <input type="reset" id="fromReset" value="x">
+        <br><i class="fas fa-sort" id="swap" style="cursor:pointer; font-size:25px; padding-top:10px"></i><br>
+        To <br> <input type="text" id="to"> <input type="reset" id="toReset" value="x">
+      </div>
       <br>
-      To <br> <input type="text" id="to"> <input type="reset" id="toReset" value="x">
-      <br><br>
-      <div style="display:flex">
+      <div style="display:flex; justify-content:center">
         <div id="steps_lift" class="btn-group" data-toggle="buttons">
           <label class="btn btn-default active" id="lsteps"><input id="steps" value="Steps" name="mode" type="radio" checked> Stairs</label>
           <label class="btn btn-default" id="llift"><input id="lift" value="Lift" name="mode" type="radio"> Elevator</label>
@@ -315,21 +322,28 @@
         <button type="button" class="btn btn-primary" onclick="routeFromTo()">Show Route</button>
       </div>
       <br><br>
-      <div id="route_diff_level" hidden>
-        <a id="continue_result" style="cursor:pointer">Continue</a>
+      <div id="route_diff_level" style="display:none">
+        <button type="button" id="continue_result" class="btn btn-lg" style="width:100%;font-size:16px;padding:12px;background:#2196F3;color:#fff;border:none;border-radius:6px;">Continue</button>
       </div>
       <br><br>
-      <p style="font-size:15px; font-family:'Courier New'">
-        Entrances: <br>
-        (1) <a href="#" onclick="$('#from').val('C-Lvl: Windsor St (CS)')">Windsor St (CS)</a> &emsp;<a href="#ent1" data-toggle="modal">Look</a><br>
-        (2) <a href="#" onclick="$('#from').val('C-Lvl: Windsor St (other)')">Windsor St (other)</a> &emsp;<a href="#ent2" data-toggle="modal">Look</a><br>
-        (3) <a href="#" onclick="$('#from').val('C-Lvl: Dineen Dr (CS)')">Dineen Dr (CS)</a> &emsp;<a href="#ent3" data-toggle="modal">Look</a><br>
-        (4) <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (Eng)')">Dineen Dr (Eng.)</a> &emsp;<a href="#ent4" data-toggle="modal">Look</a><br>
-        (5) <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (other)')">Dineen Dr (other)</a> &emsp;<a href="#ent5" data-toggle="modal">Look</a><br>
+      <div style="margin:10px 0">
+        <button type="button" class="btn btn-success btn-lg" style="width:100%;font-size:16px;padding:12px" onclick="$('#from').val('C-Lvl: Windsor St (CS)'); $('#to').focus();">
+          <i class="fas fa-map-marker-alt"></i> From Here (Kiosk)
+        </button>
+      </div>
+      <p style="font-size:13px; color:#666; margin-bottom:8px; text-align:center">
+        <i class="fas fa-location-arrow" style="color:#009688"></i> <strong>You are here:</strong> Windsor St (CS) — C Level
+      </p>
+      <p style="font-size:14px; font-family:'Courier New'; text-align:center">
+        Other entrances:<br>
+        <a href="#" onclick="$('#from').val('C-Lvl: Windsor St (other)'); $('#to').focus();">Windsor St (other)</a><br>
+        <a href="#" onclick="$('#from').val('C-Lvl: Dineen Dr (CS)'); $('#to').focus();">Dineen Dr (CS)</a><br>
+        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (Eng)'); $('#to').focus();">Dineen Dr (Eng.)</a><br>
+        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (other)'); $('#to').focus();">Dineen Dr (other)</a>
       </p>
     </div>
 
-    <div id="nav03" style="background-color:#F5F5F5; padding-left:20px">
+    <div id="nav03" style="background-color:#F5F5F5; padding:0 15px">
       <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
       <div id="cat" style="overflow-y: auto">
         <br>
@@ -339,17 +353,6 @@
       </div>
     </div>
   </div>
-
-    <div class="map-legend">
-      <div class="legend-title"><i class="fas fa-map"></i> Legend</div>
-      <div class="legend-item"><span class="legend-swatch" style="background:red;height:3px"></span> Route path</div>
-      <div class="legend-item"><span class="legend-swatch" style="background:red;border:1px solid red;height:1px"></span> Room outlines</div>
-      <div class="legend-item"><span class="legend-swatch" style="background:cyan;height:6px"></span> Selected room</div>
-      <div class="legend-item"><span class="legend-icon"><i class="fas fa-male" style="color:#337ab7"></i></span> Men's restroom</div>
-      <div class="legend-item"><span class="legend-icon"><i class="fas fa-female" style="color:#d9534f"></i></span> Women's restroom</div>
-      <div class="legend-item"><span class="legend-icon"><i class="fas fa-walking"></i></span> Stairs</div>
-      <div class="legend-item"><span class="legend-icon"><i class="fas fa-person-booth"></i></span> Elevator</div>
-    </div>
 
   <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
   <div class="w3-main" style="margin-left:100px;">
@@ -365,6 +368,11 @@
             <div class="item"><div id="DLevel"></div></div>
             <div class="item"><div id="CLevel"></div></div>
             <div class="item"><div id="BLevel"></div></div>
+          </div>
+          <div id="continue-overlay">
+            <button type="button" onclick="document.getElementById('continue_result').click(); this.parentNode.style.display='none';">
+              <i class="fas fa-arrow-right"></i> Continue to next floor
+            </button>
           </div>
         </div>
 
@@ -474,6 +482,8 @@
       maps: [],
       blockLayers: [],
       routeLayers: [null, null, null, null],
+      routeMarkers: [[], [], [], []],
+      routeHighlighted: [],
       highlighted: [],
       dataByLevel: {},
       autocompleteFields: [],
@@ -750,13 +760,20 @@
           state.maps[i].removeLayer(state.routeLayers[i]);
           state.routeLayers[i] = null;
         }
+        if (state.routeMarkers[i]) {
+          state.routeMarkers[i].forEach(function (m) { state.maps[i].removeLayer(m); });
+          state.routeMarkers[i] = [];
+        }
       }
+      state.routeHighlighted = [];
     }
 
     function resetStyle() {
       $("#directions").hide();
       $("#srchResult").html("");
       $("#route_diff_level").hide();
+      $("#continue-overlay").hide();
+      state.routeHighlighted = [];
 
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
@@ -798,8 +815,13 @@
       if (props.PlaceName) popupContent += "<i class='fas fa-map-marker-alt'></i> " + String(props.PlaceName).replace("Steps", "Stairs").replace("Lift", "Elevator");
       layer.bindPopup(popupContent);
 
-      layer.on("mouseover", function (evt) { evt.target.setStyle(selectStyle()); });
+      layer.on("mouseover", function (evt) {
+        if (state.routeHighlighted.indexOf(evt.target) === -1) {
+          evt.target.setStyle(selectStyle());
+        }
+      });
       layer.on("mouseout", function (evt) {
+        if (state.routeHighlighted.indexOf(evt.target) !== -1) return;
         evt.target.setStyle(styleFunc());
         layer.closePopup();
       });
@@ -851,16 +873,51 @@
         const blk = levelLayer._layers[key];
         if (objectIds.indexOf(blk.feature.properties.OBJECTID) !== -1) {
           blk.setStyle(selectStyle());
+          state.routeHighlighted.push(blk);
         }
       }
 
-      const routeLine = new L.Polyline(pathLatLng, {
-        color: "red",
-        weight: 3,
+      // Route outline (dark border behind the colored line)
+      var routeOutline = new L.Polyline(pathLatLng, {
+        color: "#222",
+        weight: 9,
+        opacity: 0.7,
+        smoothFactor: 1,
+        lineCap: "round",
+        lineJoin: "round"
+      });
+
+      // Route line (bright, on top of outline)
+      var routeLine = new L.Polyline(pathLatLng, {
+        color: "#ff4444",
+        weight: 5,
         opacity: 1,
-        smoothFactor: 1
-      }).addTo(levelMap);
-      state.routeLayers[levelIdx] = routeLine;
+        smoothFactor: 1,
+        lineCap: "round",
+        lineJoin: "round"
+      });
+
+      state.routeLayers[levelIdx] = L.layerGroup([routeOutline, routeLine]).addTo(levelMap);
+
+      // Start marker (green circle)
+      if (pathLatLng.length >= 2) {
+        const startMarker = L.circleMarker(pathLatLng[0], {
+          radius: 8, color: "#fff", fillColor: "#4CAF50", fillOpacity: 1, weight: 3
+        }).addTo(levelMap);
+        startMarker.bindTooltip("Start", { permanent: false, direction: "top" });
+
+        // End marker (pin icon)
+        const endIcon = L.divIcon({
+          className: "route-end-marker",
+          html: "<div style='background:#ff4444;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);font-size:14px;'><i class='fas fa-map-pin'></i></div>",
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+        const endMarker = L.marker(pathLatLng[pathLatLng.length - 1], { icon: endIcon }).addTo(levelMap);
+        endMarker.bindTooltip("Destination", { permanent: false, direction: "top" });
+
+        state.routeMarkers[levelIdx].push(startMarker, endMarker);
+      }
 
       const features = objectIds
         .map(function (oid) {
@@ -890,9 +947,15 @@
       if (lvlResults[0] === 1) {
         $("#continue_result").off("click").on("click", function () {
           showResult(lvlResults[2], 1);
+          $("#continue-overlay").hide();
         });
         $("#route_diff_level").show();
-        $("#continue_result").html("Continue on " + "EDCB"[lvlResults[2][3]] + "-Level");
+        $("#continue-overlay").show();
+        const nextFloor = "EDCB"[lvlResults[2][3]];
+        $("#continue_result").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
+        $("#continue-overlay button").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
+      } else {
+        $("#continue-overlay").hide();
       }
 
       w3_close();
