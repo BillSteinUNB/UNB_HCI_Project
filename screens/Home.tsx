@@ -47,7 +47,6 @@ export const HomeScreen: React.FC<HomeProps> = ({ onNavigate }) => {
         <NavButton title="Building Info" desc="Hours, emergency, and accessibility" icon={Info} target={ScreenName.BUILDING_INFO} colorClass="bg-white border-gray-200 hover:border-[#C41230] text-[#1A1A1A]" />
         <NavButton title="Floor Maps" desc="Interactive wayfinding" icon={MapIcon} target={ScreenName.MAPS} colorClass="bg-white border-gray-200 hover:border-[#C41230] text-[#1A1A1A]" />
       </div>
-      <div className="text-center text-gray-400 font-medium text-lg">Need help? Tap any option above or visit the main office in Room E-123.</div>
     </div>
   );
 };
