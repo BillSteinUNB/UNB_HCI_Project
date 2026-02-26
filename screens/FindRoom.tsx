@@ -1,12 +1,52 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { ScreenContainer, StatusBadge } from '../components/UI';
 import { MOCK_ROOMS } from '../constants';
-import { Search, User, ChevronDown, Users, Monitor, Calendar } from 'lucide-react';
+import { Search, X, User, ChevronDown, Users, Monitor, Calendar, Delete, CornerDownLeft, Space } from 'lucide-react';
+
+const KEYBOARD_ROWS = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+];
+
+const OnScreenKeyboard: React.FC<{
+  onKey: (key: string) => void;
+  onBackspace: () => void;
+  onClear: () => void;
+  onClose: () => void;
+}> = ({ onKey, onBackspace, onClear, onClose }) => (
+  <div className="bg-gray-100 border-t-2 border-gray-200 p-4 pb-6 shadow-inner">
+    <div className="max-w-3xl mx-auto space-y-2">
+      {KEYBOARD_ROWS.map((row, ri) => (
+        <div key={ri} className="flex justify-center gap-1.5">
+          {row.map((key) => (
+            <button key={key} onClick={() => onKey(key)} className="w-14 h-14 bg-white rounded-xl border border-gray-200 shadow-sm text-xl font-bold text-gray-800 active:bg-gray-200 active:scale-95 transition-all">
+              {key}
+            </button>
+          ))}
+          {ri === 3 && (
+            <button onClick={onBackspace} className="w-20 h-14 bg-gray-200 rounded-xl border border-gray-300 shadow-sm text-sm font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all flex items-center justify-center gap-1">
+              <Delete className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      ))}
+      <div className="flex justify-center gap-1.5 mt-1">
+        <button onClick={onClear} className="px-6 h-14 bg-gray-200 rounded-xl border border-gray-300 shadow-sm text-sm font-bold text-gray-600 active:bg-gray-300 active:scale-95 transition-all">Clear</button>
+        <button onClick={() => onKey(' ')} className="flex-1 max-w-md h-14 bg-white rounded-xl border border-gray-200 shadow-sm text-lg font-bold text-gray-500 active:bg-gray-200 active:scale-95 transition-all">Space</button>
+        <button onClick={onClose} className="px-6 h-14 bg-[#C41230] rounded-xl shadow-sm text-sm font-bold text-white active:bg-[#9E0E27] active:scale-95 transition-all">Done</button>
+      </div>
+    </div>
+  </div>
+);
 
 export const FindRoomScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
   const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const floors = ['B', 'C', 'D', 'E'];
 
   const filteredRooms = useMemo(() => {
@@ -14,9 +54,9 @@ export const FindRoomScreen: React.FC = () => {
     if (selectedFloor) results = results.filter(r => r.floor === selectedFloor);
     if (query.trim()) {
       const q = query.toLowerCase();
-      results = results.filter(r => 
-        r.number.toLowerCase().includes(q) || 
-        r.type.toLowerCase().includes(q) || 
+      results = results.filter(r =>
+        r.number.toLowerCase().includes(q) ||
+        r.type.toLowerCase().includes(q) ||
         r.professor?.toLowerCase().includes(q) ||
         r.officeTitle?.toLowerCase().includes(q)
       );
@@ -28,12 +68,31 @@ export const FindRoomScreen: React.FC = () => {
     setExpandedRoomId(prev => prev === roomId ? null : roomId);
   };
 
+  const handleKey = (key: string) => setQuery(prev => prev + key);
+  const handleBackspace = () => setQuery(prev => prev.slice(0, -1));
+  const handleClearSearch = () => { setQuery(''); setSelectedFloor(null); };
+
   return (
     <ScreenContainer className="bg-gray-50 flex flex-col h-full">
       <div className="bg-white p-6 pb-4 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="relative mb-6">
           <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none"><Search className="h-8 w-8 text-gray-400" /></div>
-          <input type="text" className="block w-full pl-16 pr-6 py-5 border-2 border-gray-200 rounded-2xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#C41230] text-2xl font-medium transition-colors" placeholder="Search room number or professor..." value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
+          <input
+            ref={inputRef}
+            type="text"
+            readOnly
+            className="block w-full pl-16 pr-14 py-5 border-2 border-gray-200 rounded-2xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#C41230] text-2xl font-medium transition-colors cursor-pointer"
+            placeholder="Search room number or professor..."
+            value={query}
+            onClick={() => setShowKeyboard(true)}
+          />
+          {query && (
+            <button onClick={handleClearSearch} className="absolute inset-y-0 right-0 pr-5 flex items-center">
+              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center active:bg-gray-300 transition-colors">
+                <X className="w-5 h-5 text-gray-600" />
+              </div>
+            </button>
+          )}
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           <button onClick={() => setSelectedFloor(null)} className={`px-6 py-3 rounded-xl text-lg font-bold transition-all whitespace-nowrap active:scale-95 ${selectedFloor === null ? 'bg-[#1A1A1A] text-white shadow-md' : 'bg-gray-100 text-gray-600'}`}>All Levels</button>
@@ -42,7 +101,7 @@ export const FindRoomScreen: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="p-6 pb-24">
+      <div className="flex-1 overflow-y-auto p-6 pb-24">
         <h3 className="text-gray-500 font-bold uppercase tracking-wider text-sm mb-4 ml-1">{filteredRooms.length} Results Found</h3>
         {filteredRooms.length > 0 ? (
           <div className="space-y-4">
@@ -55,6 +114,12 @@ export const FindRoomScreen: React.FC = () => {
                       <h3 className="text-2xl font-bold text-gray-900">{room.number}</h3>
                       <div className="flex items-center gap-3 text-gray-600 text-lg">
                         <span>{room.type}</span>
+                        {room.officeTitle && (
+                          <>
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            <span className="text-gray-500">{room.officeTitle}</span>
+                          </>
+                        )}
                         <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
                         <span>Level {room.floor}</span>
                       </div>
@@ -66,7 +131,10 @@ export const FindRoomScreen: React.FC = () => {
                         </div>
                       )}
                       {room.currentStatus && <StatusBadge status={room.currentStatus} />}
-                      <ChevronDown className={`w-7 h-7 text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                      <div className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${isExpanded ? 'bg-[#C41230] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        <span>{isExpanded ? 'Close' : 'Details'}</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                      </div>
                     </div>
                   </div>
 
@@ -126,10 +194,18 @@ export const FindRoomScreen: React.FC = () => {
             <Search className="w-24 h-24 mb-6 opacity-20" />
             <p className="text-2xl font-medium">No rooms found</p>
             <p className="mt-2">Try a different search term or clear filters.</p>
-            <button onClick={() => { setQuery(''); setSelectedFloor(null); }} className="mt-8 px-8 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold active:bg-gray-300">Clear Search</button>
+            <button onClick={() => { handleClearSearch(); setShowKeyboard(false); }} className="mt-8 px-8 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold active:bg-gray-300">Clear Search</button>
           </div>
         )}
       </div>
+      {showKeyboard && (
+        <OnScreenKeyboard
+          onKey={handleKey}
+          onBackspace={handleBackspace}
+          onClear={handleClearSearch}
+          onClose={() => setShowKeyboard(false)}
+        />
+      )}
     </ScreenContainer>
   );
 };
