@@ -199,12 +199,15 @@ export const FindRoomScreen: React.FC = () => {
         )}
       </div>
       {showKeyboard && (
-        <OnScreenKeyboard
-          onKey={handleKey}
-          onBackspace={handleBackspace}
-          onClear={handleClearSearch}
-          onClose={() => setShowKeyboard(false)}
-        />
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setShowKeyboard(false)} />
+          <OnScreenKeyboard
+            onKey={handleKey}
+            onBackspace={handleBackspace}
+            onClear={handleClearSearch}
+            onClose={() => setShowKeyboard(false)}
+          />
+        </>
       )}
     </ScreenContainer>
   );
