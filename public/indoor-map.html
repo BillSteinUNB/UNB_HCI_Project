@@ -369,7 +369,7 @@
   </div>
 
   <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
-  <div class="w3-main" style="margin-left:100px;">
+  <div class="w3-main" style="margin-left:375px;">
     <div class="w3-top w3-theme w3-large w3-hide-large">
       <i class="fa fa-bars w3-button w3-teal w3-xlarge" onclick="w3_open()"></i>
       HeadHall - indoorGIS
@@ -793,7 +793,7 @@
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
         if (state.maps[i]) {
-          state.maps[i].fitBounds([[0, 0], [90, 180]], { paddingTopLeft: [60, 10], paddingBottomRight: [20, 10] });
+          state.maps[i].fitBounds([[0, 0], [90, 180]], { padding: [10, 10] });
           state.maps[i].closePopup();
         }
       }
@@ -1281,7 +1281,7 @@
       for (const level of LEVELS) {
         const map = L.map(level.mapId, levelConfig);
         L.imageOverlay(level.floor, imageBounds, imageOverlayOptions).addTo(map);
-        map.fitBounds(imageBounds, { paddingTopLeft: [60, 10], paddingBottomRight: [20, 10] });
+        map.fitBounds(imageBounds, { padding: [10, 10] });
         state.maps[level.idx] = map;
 
         L.control.zoom({ position: 'topright' }).addTo(map);
