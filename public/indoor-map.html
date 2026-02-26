@@ -22,7 +22,7 @@
 
     #ELevel, #DLevel, #CLevel, #BLevel {
       height: calc(100vh - 310px);
-      width: 110%;
+      width: 100%;
     }
 
     .carousel-inner, .carousel-inner .item {
@@ -286,9 +286,9 @@
 
     <div class="level-cubes">
       <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B</a>
-      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C</a>
+      <a href="javascript:void(0)" id="lvlC" class="active-level" onclick="switchLevel(2)">C</a>
       <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
-      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E</a>
+      <a href="javascript:void(0)" id="lvlE" onclick="switchLevel(0)">E</a>
     </div>
 
     <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding:0 15px">
@@ -364,9 +364,9 @@
     <div class="container">
         <div id="cmap" class="carousel slide" data-ride="carousel" data-interval="false">
           <div class="carousel-inner">
-            <div class="item active"><div id="ELevel"></div></div>
+            <div class="item"><div id="ELevel"></div></div>
             <div class="item"><div id="DLevel"></div></div>
-            <div class="item"><div id="CLevel"></div></div>
+            <div class="item active"><div id="CLevel"></div></div>
             <div class="item"><div id="BLevel"></div></div>
           </div>
           <div id="continue-overlay">
@@ -1381,6 +1381,7 @@
           for (var i = 0; i < LEVELS.length; i++) {
             if (state.maps[i]) state.maps[i].invalidateSize();
           }
+          switchLevel(2);
         })
         .catch(function (err) {
           $("#srchResult").html("Failed to load map data. " + String(err));
