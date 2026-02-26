@@ -276,7 +276,7 @@
   <script src="https://cdn.jsdelivr.net/npm/metismenu@3.0.4/dist/metisMenu.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2.4.0/src/easy-button.js"></script>
 
-  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:315px;border:1px groove black" id="mySidebar">
+  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:355px;border:1px groove black" id="mySidebar">
     <div class="w3-bar w3-black w3-center">
       <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav01i" onclick="openNav('nav01')"><i class="fas fa-search"></i><span class="sr-only">Search</span></a>
       <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav02i" onclick="openNav('nav02')"><i class="fas fa-directions"></i><span class="sr-only">Routing</span></a>
@@ -472,7 +472,8 @@
       crs: L.CRS.Simple,
       maxBounds: [[-10, -10], [100, 190]],
       maxBoundsViscosity: 1.0,
-      attributionControl: false
+      attributionControl: false,
+      zoomControl: false
     };
 
     const imageBounds = [[0, 0], [90, 180]];
@@ -1267,7 +1268,10 @@
         map.fitBounds(imageBounds, { paddingTopLeft: [20, 10], paddingBottomRight: [40, 10] });
         state.maps[level.idx] = map;
 
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
         L.easyButton({
+          position: 'topright',
           states: [
             {
               stateName: "show-labels",
