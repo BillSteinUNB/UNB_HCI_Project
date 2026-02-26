@@ -30,7 +30,7 @@ export const EventsScreen: React.FC = () => {
   return (
     <ScreenContainer className="bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto pb-12">
-        <div className="flex items-center gap-3 mb-8 text-gray-500"><CalendarDays className="w-6 h-6" /><span className="text-xl font-medium">Tuesday, January 23, 2026</span></div>
+        <div className="flex items-center gap-3 mb-8 text-gray-500"><CalendarDays className="w-6 h-6" /><span className="text-xl font-medium">Thursday, February 26, 2026</span></div>
         {liveEvents.length > 0 && (
           <section className="mb-10">
             <h2 className="text-gray-500 font-bold uppercase tracking-wider text-sm mb-4 pl-1">Live Events</h2>

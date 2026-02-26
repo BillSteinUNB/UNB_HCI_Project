@@ -15,7 +15,7 @@ export const MOCK_ROOMS: Room[] = [
   { id: "itb214", number: "ITB214", type: "Lab", floor: "B", capacity: 60, features: ["Projector", "Computers"], officeTitle: "Human Computer Interaction Lab", currentStatus: 'available', schedule: [] },
   { id: "itb217", number: "ITB217", type: "Lab", floor: "B", capacity: 60, features: ["Projector", "Computers"], officeTitle: "Secure Systems Lab", currentStatus: 'available', schedule: [] },
   { id: "itb222", number: "ITB222", type: "Lab", floor: "B", capacity: 60, features: ["Projector", "Computers"], officeTitle: "Human Computer Interaction Lab 2", currentStatus: 'available', schedule: [] },
-  { id: "itb215", number: "ITB213", type: "Study Space", floor: "B", capacity: 10, features: ["Computers"], officeTitle: "FCS Grad Students", currentStatus: 'available', schedule: [] },
+  { id: "itb215", number: "ITB215", type: "Study Space", floor: "B", capacity: 10, features: ["Computers"], officeTitle: "FCS Grad Students", currentStatus: 'available', schedule: [] },
   { id: "c307", number: "307", type: "Classroom", floor: "C", capacity: 40, features: ["Projector", "Whiteboard"], currentStatus: 'busy', schedule: [
     { time: "11:00-12:30", course: "C-18A", name: "Circuits I", active: true }
   ]},
@@ -95,23 +95,36 @@ export const MOCK_ROOMS: Room[] = [
 ];
 
 export const MOCK_EVENTS: Event[] = [
-  { id: "evt1", title: "Engineering Career Fair", date: "2026-01-23", startTime: "10:00", endTime: "16:00", location: "E-Hall Lobby", description: "Meet employers from top engineering firms across Canada. Bring your resume and portfolio. Casual networking lunch provided at noon.", isLive: true },
-  { id: "evt2", title: "Guest Lecture: Predictive Modeling in Civil Engineering", date: "2026-01-23", startTime: "15:30", endTime: "17:00", location: "Room E-101", description: "Dr. James Chen discusses the impact of predictive modeling on structural integrity monitoring.", isLive: false },
-  { id: "evt3", title: "EUS Study Session: Finals Prep", date: "2026-01-23", startTime: "18:00", endTime: "21:00", location: "Room E-204", description: "Join the Engineering Undergraduate Society for a study marathon. Snacks and coffee provided.", isLive: false }
+  { id: "evt1", title: "Engineering Career Fair", date: "2026-02-26", startTime: "09:00", endTime: "12:00", location: "E-Hall Lobby", description: "Meet employers from top engineering firms across Canada. Bring your resume and portfolio. Casual networking lunch provided at noon.", isLive: true },
+  { id: "evt2", title: "Guest Lecture: Predictive Modeling in Civil Engineering", date: "2026-02-26", startTime: "13:30", endTime: "15:00", location: "Room E-101", description: "Dr. James Chen discusses the impact of predictive modeling on structural integrity monitoring.", isLive: false },
+  { id: "evt3", title: "EUS Study Session: Finals Prep", date: "2026-02-26", startTime: "18:00", endTime: "21:00", location: "Room E-204", description: "Join the Engineering Undergraduate Society for a study marathon. Snacks and coffee provided.", isLive: false }
 ];
 
-export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
-  { id: 'hours', title: 'Hours of Operation', icon: <Clock className="w-6 h-6" />, isOpenDefault: true, content: (
+const BuildingStatusContent: React.FC = () => {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const time = hour + minute / 60;
+  let isOpen = false;
+  if (day >= 1 && day <= 5) isOpen = time >= 7 && time < 23;
+  else if (day === 6) isOpen = time >= 8 && time < 18;
+  else isOpen = time >= 10 && time < 18;
+  return (
     <div className="space-y-2">
       <div className="flex justify-between border-b border-gray-100 pb-2"><span className="font-medium">Monday - Friday</span><span>7:00 AM - 11:00 PM</span></div>
       <div className="flex justify-between border-b border-gray-100 pb-2"><span className="font-medium">Saturday</span><span>8:00 AM - 6:00 PM</span></div>
       <div className="flex justify-between"><span className="font-medium">Sunday</span><span>10:00 AM - 6:00 PM</span></div>
-      <div className="mt-4 p-3 bg-green-50 text-green-800 rounded-lg flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-green-600"></span>
-        <span className="font-bold">Building is currently OPEN</span>
+      <div className={`mt-4 p-3 rounded-lg flex items-center gap-2 ${isOpen ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-600' : 'bg-red-600'}`}></span>
+        <span className="font-bold">Building is currently {isOpen ? 'OPEN' : 'CLOSED'}</span>
       </div>
     </div>
-  )},
+  );
+};
+
+export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
+  { id: 'hours', title: 'Hours of Operation', icon: <Clock className="w-6 h-6" />, isOpenDefault: true, content: <BuildingStatusContent /> },
   { id: 'contact', title: 'IT Service Desk', icon: <Phone className="w-6 h-6" />, content: (
     <div className="space-y-3">
       <div className="mb-4">
@@ -145,10 +158,6 @@ export const BUILDING_INFO_SECTIONS: BuildingSection[] = [
         <div className="text-sm text-red-800 mt-1">Available 24/7. For immediate emergencies, call 911 first.</div>
       </div>
       <div className="grid grid-cols-1 gap-3">
-        <div className="flex items-center gap-3 p-3 bg-white border rounded-lg">
-          <div className="bg-gray-100 p-2 rounded">🚑</div>
-          <div><div className="font-semibold">First Aid Kit</div><div className="text-sm text-gray-500">Room E-100 (Main Office)</div></div>
-        </div>
         <div className="flex items-center gap-3 p-3 bg-white border rounded-lg">
           <div className="bg-gray-100 p-2 rounded">🧯</div>
           <div><div className="font-semibold">AED Defibrillator</div><div className="text-sm text-gray-500">Main Lobby by Elevators</div></div>
