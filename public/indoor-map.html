@@ -17,12 +17,12 @@
   <style>
     .leaflet-container {
       background-color: rgba(255, 0, 0, 0);
-      border: 1px solid black;
+      border: none;
     }
 
     #ELevel, #DLevel, #CLevel, #BLevel {
       height: calc(100vh - 310px);
-      width: 100%;
+      width: 110%;
     }
 
     .carousel-inner, .carousel-inner .item {
@@ -285,10 +285,10 @@
     </div>
 
     <div class="level-cubes">
-      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E</a>
-      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
-      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C</a>
       <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B</a>
+      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C</a>
+      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
+      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E</a>
     </div>
 
     <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding:0 15px">
