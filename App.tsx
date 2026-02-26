@@ -33,7 +33,7 @@ const App: React.FC = () => {
   const renderScreen = () => {
     switch (currentScreen) {
       case ScreenName.HOME: return <HomeScreen onNavigate={navigateTo} />;
-      case ScreenName.FIND_ROOM: return <FindRoomScreen onNavigate={navigateTo} />;
+      case ScreenName.FIND_ROOM: return <FindRoomScreen />;
       case ScreenName.ROOM_DETAIL: return <RoomDetailScreen roomId={currentParams?.roomId} onNavigate={navigateTo} />;
       case ScreenName.EVENTS: return <EventsScreen />;
       case ScreenName.BUILDING_INFO: return <BuildingInfoScreen />;

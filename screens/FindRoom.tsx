@@ -1,14 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { ScreenContainer, ListItem } from '../components/UI';
+import { ScreenContainer, StatusBadge } from '../components/UI';
 import { MOCK_ROOMS } from '../constants';
-import { ScreenName } from '../types';
-import { Search, User } from 'lucide-react';
+import { Search, User, ChevronDown, Users, Monitor, Calendar } from 'lucide-react';
 
-interface FindRoomProps { onNavigate: (screen: ScreenName, params?: any) => void; }
-
-export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
+export const FindRoomScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
+  const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
   const floors = ['B', 'C', 'D', 'E'];
 
   const filteredRooms = useMemo(() => {
@@ -25,6 +23,10 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
     }
     return results;
   }, [query, selectedFloor]);
+
+  const toggleRoom = (roomId: string) => {
+    setExpandedRoomId(prev => prev === roomId ? null : roomId);
+  };
 
   return (
     <ScreenContainer className="bg-gray-50 flex flex-col h-full">
@@ -44,9 +46,80 @@ export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
         <h3 className="text-gray-500 font-bold uppercase tracking-wider text-sm mb-4 ml-1">{filteredRooms.length} Results Found</h3>
         {filteredRooms.length > 0 ? (
           <div className="space-y-4">
-            {filteredRooms.map((room) => (
-              <ListItem key={room.id} title={room.number} subtitle={room.type} meta={`Level ${room.floor}`} onClick={() => onNavigate(ScreenName.ROOM_DETAIL, { roomId: room.id })} rightElement={room.professor ? <div className="flex items-center gap-2 text-gray-500 bg-gray-100 px-3 py-1 rounded-lg text-sm font-semibold"><User className="w-4 h-4"/> {room.professor}</div> : null} />
-            ))}
+            {filteredRooms.map((room) => {
+              const isExpanded = expandedRoomId === room.id;
+              return (
+                <div key={room.id} className={`bg-white rounded-xl border shadow-sm transition-all ${isExpanded ? 'border-[#C41230]/30 shadow-md' : 'border-gray-200'}`}>
+                  <div onClick={() => toggleRoom(room.id)} className="p-6 flex items-center justify-between cursor-pointer active:bg-gray-50 transition-colors rounded-xl">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="text-2xl font-bold text-gray-900">{room.number}</h3>
+                      <div className="flex items-center gap-3 text-gray-600 text-lg">
+                        <span>{room.type}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                        <span>Level {room.floor}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {room.professor && (
+                        <div className="flex items-center gap-2 text-gray-500 bg-gray-100 px-3 py-1 rounded-lg text-sm font-semibold">
+                          <User className="w-4 h-4" /> {room.professor}
+                        </div>
+                      )}
+                      {room.currentStatus && <StatusBadge status={room.currentStatus} />}
+                      <ChevronDown className={`w-7 h-7 text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="px-6 pb-6 border-t border-gray-100 pt-5 space-y-5">
+                      <div className="flex gap-8">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-gray-100 p-2.5 rounded-lg text-gray-600"><Users className="w-5 h-5" /></div>
+                          <div><div className="text-xs text-gray-500 font-bold uppercase">Capacity</div><div className="text-lg font-bold">{room.capacity} Seats</div></div>
+                        </div>
+                        {(room.type === 'Classroom' || room.type === 'Lab') && (
+                          <div className="flex items-center gap-3">
+                            <div className="bg-gray-100 p-2.5 rounded-lg text-gray-600"><Monitor className="w-5 h-5" /></div>
+                            <div><div className="text-xs text-gray-500 font-bold uppercase">Equipment</div><div className="text-lg font-bold">Standard AV</div></div>
+                          </div>
+                        )}
+                      </div>
+
+                      {room.features.length > 0 && (
+                        <div>
+                          <h4 className="text-gray-500 font-bold uppercase tracking-wider text-xs mb-3">Room Features</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {room.features.map((feature, i) => (
+                              <span key={i} className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-base font-medium">{feature}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Calendar className="w-5 h-5 text-[#C41230]" />
+                          <h4 className="text-gray-500 font-bold uppercase tracking-wider text-xs">Today's Schedule</h4>
+                        </div>
+                        {room.schedule.length > 0 ? (
+                          <div className="space-y-3">
+                            {room.schedule.map((slot, idx) => (
+                              <div key={idx} className={`flex items-center p-3 rounded-xl border-l-4 ${slot.active ? 'bg-red-50 border-[#C41230]' : 'bg-gray-50 border-gray-300'}`}>
+                                <div className="w-28 font-mono font-bold text-base text-gray-600">{slot.time}</div>
+                                <div className="flex-1"><div className="font-bold text-base">{slot.course}</div><div className="text-gray-600 text-sm">{slot.name}</div></div>
+                                {slot.active && <span className="px-3 py-1 bg-[#C41230] text-white text-xs font-bold uppercase rounded-full animate-pulse">Now</span>}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-400 text-base">No classes scheduled today.</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400">
