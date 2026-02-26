@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>indoorGIS: HeadHall</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/metismenu@3.0.4/dist/metisMenu.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2.4.0/src/easy-button.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+
+  <style>
+    .leaflet-container {
+      background-color: rgba(255, 0, 0, 0);
+      border: 1px solid black;
+    }
+
+    #ELevel, #DLevel, #CLevel, #BLevel {
+      height: calc(100vh - 310px);
+      width: 100%;
+    }
+
+    .carousel-inner, .carousel-inner .item {
+      height: calc(100vh - 310px);
+    }
+
+    input[type=text] {
+      border: none;
+      border-bottom: 1px solid purple;
+      width: 300px;
+      background-color: #f5f5f5;
+    }
+
+    img:hover {
+      cursor: pointer;
+    }
+
+    input[type="reset"] {
+      background-position: center center;
+      background-repeat: no-repeat;
+      height: 32px;
+      width: 32px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      position: relative;
+      top: -3px;
+      left: -40px;
+      color: #444;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #lsteps,
+    #llift,
+    #continue_result {
+      cursor: pointer;
+    }
+
+    .leaflet-tooltip.labelstyle {
+      background-color: transparent;
+      border: transparent;
+      box-shadow: none;
+      font-size: 7.5px;
+      color: black;
+      display: none;
+    }
+
+    .categories,
+    .categories ul {
+      list-style: none;
+    }
+
+    .categories li {
+      position: relative;
+    }
+
+    .categories li a {
+      display: block;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      color: #333;
+      text-decoration: none;
+      outline: 0 none;
+    }
+
+    .categories ul:before {
+      position: absolute;
+      border-left: 1px dotted #333;
+      content: "";
+      width: 30px;
+      top: 25px;
+      left: 5px;
+      bottom: 17px;
+    }
+
+    .categories ul > li:before {
+      position: absolute;
+      border-top: 1px dotted #333;
+      content: "";
+      width: 30px;
+      top: 13px;
+      left: -33px;
+    }
+
+    .categories {
+      padding-left: 20px;
+    }
+
+    .w3-white {
+      background-color: #f5f5f5 !important;
+    }
+
+    a {
+      color: blue;
+      text-decoration: underline blue;
+    }
+
+    .carousel-inner .item {
+      transition-duration: 0.4s;
+    }
+
+    .leaflet-bar button {
+      padding-top: 9px;
+    }
+
+    .level-cubes {
+      display: flex;
+      gap: 8px;
+      padding: 10px 15px;
+      justify-content: center;
+      background: #f5f5f5;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .level-cubes a {
+      flex: 1;
+      max-width: 72px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      background: #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .level-cubes a:hover {
+      background: #d0d0d0;
+    }
+
+    .level-cubes a.active-level {
+      background: #009688;
+      color: #fff;
+      border-color: #00796b;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .w3-bar.w3-black .w3-bar-item {
+      font-size: 22px;
+      padding: 16px 0;
+    }
+
+    #cmap {
+      position: relative;
+    }
+
+    #continue-overlay {
+      display: none;
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 1000;
+    }
+
+    #continue-overlay button {
+      background: #2196F3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    #continue-overlay button:hover {
+      background: #1976D2;
+    }
+
+    @media screen and (max-width: 800px) {
+      #mySidebar {
+        width: 100% !important;
+      }
+
+      .w3-main {
+        margin-left: 0 !important;
+      }
+
+      input[type=text] {
+        width: calc(100% - 40px);
+      }
+
+      #swap {
+        padding-left: 0 !important;
+        float: right;
+        margin-right: 18px;
+      }
+    }
+
+    /* ── Virtual Keyboard ── */
+    #kiosk-keyboard {
+      max-width: 600px;
+      margin: 10px auto;
+      padding: 10px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .kb-key {
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 18px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      margin: 2px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .kb-key:hover, .kb-key:active {
+      background: #e0f2f1;
+    }
+    .kb-key.kb-space {
+      flex: 1;
+      max-width: 300px;
+    }
+    .kb-key.kb-bksp {
+      font-size: 20px;
+      min-width: 52px;
+    }
+  </style>
+</head>
+<body style="background-color:#F5F5F5">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/metismenu@3.0.4/dist/metisMenu.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2.4.0/src/easy-button.js"></script>
+
+  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:395px;border:1px groove black" id="mySidebar">
+    <div class="w3-bar w3-black w3-center">
+      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav01i" onclick="openNav('nav01')"><i class="fas fa-search"></i><span class="sr-only">Search</span></a>
+      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav02i" onclick="openNav('nav02')"><i class="fas fa-directions"></i><span class="sr-only">Routing</span></a>
+      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav03i" onclick="openNav('nav03')"><i class="fas fa-sitemap"></i><span class="sr-only">Categories</span></a>
+      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" onclick="clearFunc()"><i class="fas fa-eraser"></i><span class="sr-only">Clear</span></a>
+    </div>
+
+    <div class="level-cubes">
+      <a href="javascript:void(0)" id="lvlE" class="active-level" onclick="switchLevel(0)">E</a>
+      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
+      <a href="javascript:void(0)" id="lvlC" onclick="switchLevel(2)">C</a>
+      <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B</a>
+    </div>
+
+    <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding:0 15px">
+      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
+      <br>
+      <p style="font-size:15px; font-family:'Courier New'">(Enter at least two characters)</p>
+      Search for <br> <input type="text" id="searchBox"> <input type="reset" id="srchReset" value="x">
+      <br><br>
+      <button type="button" class="btn btn-primary" onclick="search()">Find</button> &emsp;
+      <button type="button" class="btn btn-success" id="directions" hidden>Directions</button>
+      <br><br>
+      <div id="srchResult"></div>
+    </div>
+
+    <div id="nav02" style="background-color:#F5F5F5; padding:0 15px">
+      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
+      <br>
+      <p style="font-size:15px; font-family:'Courier New'; text-align:center">(Enter at least two characters)</p>
+      <div style="text-align:center">
+        From <br> <input type="text" id="from"> <input type="reset" id="fromReset" value="x">
+        <br><i class="fas fa-sort" id="swap" style="cursor:pointer; font-size:25px; padding-top:10px"></i><br>
+        To <br> <input type="text" id="to"> <input type="reset" id="toReset" value="x">
+      </div>
+      <br>
+      <div style="display:flex; justify-content:center">
+        <div id="steps_lift" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default active" id="lsteps"><input id="steps" value="Steps" name="mode" type="radio" checked> Stairs</label>
+          <label class="btn btn-default" id="llift"><input id="lift" value="Lift" name="mode" type="radio"> Elevator</label>
+        </div>
+        &emsp;
+        <button type="button" class="btn btn-primary" onclick="routeFromTo()">Show Route</button>
+      </div>
+      <br><br>
+      <div id="route_diff_level" style="display:none">
+        <button type="button" id="continue_result" class="btn btn-lg" style="width:100%;font-size:16px;padding:12px;background:#2196F3;color:#fff;border:none;border-radius:6px;">Continue</button>
+      </div>
+      <br><br>
+      <div style="margin:10px 0">
+        <button type="button" class="btn btn-success btn-lg" style="width:100%;font-size:16px;padding:12px" onclick="$('#from').val('C-Lvl: Windsor St (CS)'); $('#to').focus();">
+          <i class="fas fa-map-marker-alt"></i> From Here (Kiosk)
+        </button>
+      </div>
+      <p style="font-size:13px; color:#666; margin-bottom:8px; text-align:center">
+        <i class="fas fa-location-arrow" style="color:#009688"></i> <strong>You are here:</strong> Windsor St (CS) — C Level
+      </p>
+      <p style="font-size:14px; font-family:'Courier New'; text-align:center">
+        Other entrances:<br>
+        <a href="#" onclick="$('#from').val('C-Lvl: Windsor St (other)'); $('#to').focus();">Windsor St (other)</a><br>
+        <a href="#" onclick="$('#from').val('C-Lvl: Dineen Dr (CS)'); $('#to').focus();">Dineen Dr (CS)</a><br>
+        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (Eng)'); $('#to').focus();">Dineen Dr (Eng.)</a><br>
+        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (other)'); $('#to').focus();">Dineen Dr (other)</a>
+      </p>
+    </div>
+
+    <div id="nav03" style="background-color:#F5F5F5; padding:0 15px">
+      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
+      <div id="cat" style="overflow-y: auto">
+        <br>
+        <ul class="categories">
+          <div id="catContent"></div>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+  <div class="w3-main" style="margin-left:100px;">
+    <div class="w3-top w3-theme w3-large w3-hide-large">
+      <i class="fa fa-bars w3-button w3-teal w3-xlarge" onclick="w3_open()"></i>
+      HeadHall - indoorGIS
+    </div>
+
+    <div class="container">
+        <div id="cmap" class="carousel slide" data-ride="carousel" data-interval="false">
+          <div class="carousel-inner">
+            <div class="item active"><div id="ELevel"></div></div>
+            <div class="item"><div id="DLevel"></div></div>
+            <div class="item"><div id="CLevel"></div></div>
+            <div class="item"><div id="BLevel"></div></div>
+          </div>
+          <div id="continue-overlay">
+            <button type="button" onclick="document.getElementById('continue_result').click(); this.parentNode.style.display='none';">
+              <i class="fas fa-arrow-right"></i> Continue to next floor
+            </button>
+          </div>
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <div id="kiosk-keyboard">
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('1')">1</button>
+            <button class="kb-key" onclick="kioskKey('2')">2</button>
+            <button class="kb-key" onclick="kioskKey('3')">3</button>
+            <button class="kb-key" onclick="kioskKey('4')">4</button>
+            <button class="kb-key" onclick="kioskKey('5')">5</button>
+            <button class="kb-key" onclick="kioskKey('6')">6</button>
+            <button class="kb-key" onclick="kioskKey('7')">7</button>
+            <button class="kb-key" onclick="kioskKey('8')">8</button>
+            <button class="kb-key" onclick="kioskKey('9')">9</button>
+            <button class="kb-key" onclick="kioskKey('0')">0</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('Q')">Q</button>
+            <button class="kb-key" onclick="kioskKey('W')">W</button>
+            <button class="kb-key" onclick="kioskKey('E')">E</button>
+            <button class="kb-key" onclick="kioskKey('R')">R</button>
+            <button class="kb-key" onclick="kioskKey('T')">T</button>
+            <button class="kb-key" onclick="kioskKey('Y')">Y</button>
+            <button class="kb-key" onclick="kioskKey('U')">U</button>
+            <button class="kb-key" onclick="kioskKey('I')">I</button>
+            <button class="kb-key" onclick="kioskKey('O')">O</button>
+            <button class="kb-key" onclick="kioskKey('P')">P</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('A')">A</button>
+            <button class="kb-key" onclick="kioskKey('S')">S</button>
+            <button class="kb-key" onclick="kioskKey('D')">D</button>
+            <button class="kb-key" onclick="kioskKey('F')">F</button>
+            <button class="kb-key" onclick="kioskKey('G')">G</button>
+            <button class="kb-key" onclick="kioskKey('H')">H</button>
+            <button class="kb-key" onclick="kioskKey('J')">J</button>
+            <button class="kb-key" onclick="kioskKey('K')">K</button>
+            <button class="kb-key" onclick="kioskKey('L')">L</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+            <button class="kb-key" onclick="kioskKey('Z')">Z</button>
+            <button class="kb-key" onclick="kioskKey('X')">X</button>
+            <button class="kb-key" onclick="kioskKey('C')">C</button>
+            <button class="kb-key" onclick="kioskKey('V')">V</button>
+            <button class="kb-key" onclick="kioskKey('B')">B</button>
+            <button class="kb-key" onclick="kioskKey('N')">N</button>
+            <button class="kb-key" onclick="kioskKey('M')">M</button>
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key kb-space" onclick="kioskKey(' ')">SPACE</button>
+          </div>
+        </div>
+
+    </div>
+  </div>
+
+
+  <div id="ent1" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(1) Windsor St (CS side)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
+  <div id="ent2" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(2) Windsor St (other)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
+  <div id="ent3" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(3) Dineen Dr (CS)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
+  <div id="ent4" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(4) Dineen Dr (Eng.)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
+  <div id="ent5" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(5) Dineen Dr (other)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
+
+  <script>
+    /* ── Kiosk virtual keyboard ── */
+    var activeInput = null;
+    $(document).on("focus", "input[type=text]", function() { activeInput = this; });
+
+    function kioskKey(char) {
+      if (!activeInput) activeInput = document.getElementById("searchBox");
+      activeInput.focus();
+      if (char === "BACKSPACE") {
+        activeInput.value = activeInput.value.slice(0, -1);
+      } else if (char === " ") {
+        activeInput.value += " ";
+      } else {
+        activeInput.value += char;
+      }
+      $(activeInput).trigger("input").autocomplete("search", activeInput.value);
+    }
+
+    const LEVELS = [
+      { code: "E", idx: 0, name: "E-Lvl", mapId: "ELevel", floor: "/floorplans/E_Level.png" },
+      { code: "D", idx: 1, name: "D-Lvl", mapId: "DLevel", floor: "/floorplans/D_Level.jpg" },
+      { code: "C", idx: 2, name: "C-Lvl", mapId: "CLevel", floor: "/floorplans/C_Level.jpg" },
+      { code: "B", idx: 3, name: "B-Lvl", mapId: "BLevel", floor: "/floorplans/B_Level.jpg" }
+    ];
+
+    const levelConfig = {
+      minZoom: 1.5,
+      maxZoom: 5,
+      zoomSnap: 0.1,
+      zoomDelta: 0.25,
+      crs: L.CRS.Simple,
+      maxBounds: [[-10, -10], [100, 190]],
+      maxBoundsViscosity: 1.0,
+      attributionControl: false
+    };
+
+    const imageBounds = [[0, 0], [90, 180]];
+    const imageOverlayOptions = { opacity: 0.85 };
+
+    const state = {
+      maps: [],
+      blockLayers: [],
+      routeLayers: [null, null, null, null],
+      routeMarkers: [[], [], [], []],
+      routeHighlighted: [],
+      highlighted: [],
+      dataByLevel: {},
+      autocompleteFields: [],
+      diffLevelPayload: null
+    };
+
+    function r4(value) {
+      return Math.round(Number(value) * 10000) / 10000;
+    }
+
+    function coordKey(pt) {
+      return r4(pt[0]) + "," + r4(pt[1]);
+    }
+
+    function parseKey(key) {
+      const parts = key.split(",");
+      return [Number(parts[0]), Number(parts[1])];
+    }
+
+    function dist(a, b) {
+      return Math.hypot(a[0] - b[0], a[1] - b[1]);
+    }
+
+    class MinHeap {
+      constructor() { this.items = []; }
+      size() { return this.items.length; }
+      push(item) {
+        this.items.push(item);
+        this.bubbleUp(this.items.length - 1);
+      }
+      pop() {
+        if (!this.items.length) return null;
+        const min = this.items[0];
+        const last = this.items.pop();
+        if (this.items.length && last) {
+          this.items[0] = last;
+          this.bubbleDown(0);
+        }
+        return min;
+      }
+      bubbleUp(index) {
+        while (index > 0) {
+          const parent = Math.floor((index - 1) / 2);
+          if (this.items[parent].f <= this.items[index].f) break;
+          [this.items[parent], this.items[index]] = [this.items[index], this.items[parent]];
+          index = parent;
+        }
+      }
+      bubbleDown(index) {
+        const length = this.items.length;
+        while (true) {
+          const left = index * 2 + 1;
+          const right = index * 2 + 2;
+          let smallest = index;
+          if (left < length && this.items[left].f < this.items[smallest].f) smallest = left;
+          if (right < length && this.items[right].f < this.items[smallest].f) smallest = right;
+          if (smallest === index) break;
+          [this.items[index], this.items[smallest]] = [this.items[smallest], this.items[index]];
+          index = smallest;
+        }
+      }
+    }
+
+    function buildGraph(routeGeoJSON) {
+      const adjacency = new Map();
+
+      function addAdj(a, b) {
+        const aKey = coordKey(a);
+        const bKey = coordKey(b);
+        const aNode = parseKey(aKey);
+        const bNode = parseKey(bKey);
+        const weight = dist(aNode, bNode);
+
+        if (!adjacency.has(aKey)) adjacency.set(aKey, []);
+        if (!adjacency.has(bKey)) adjacency.set(bKey, []);
+        adjacency.get(aKey).push({ key: bKey, node: bNode, weight: weight });
+        adjacency.get(bKey).push({ key: aKey, node: aNode, weight: weight });
+      }
+
+      for (const feature of routeGeoJSON.features || []) {
+        const geom = feature.geometry;
+        if (!geom || geom.type !== "LineString") continue;
+        const coords = geom.coordinates || [];
+        if (coords.length < 2) continue;
+        if (coords.length === 2) {
+          addAdj(coords[0], coords[1]);
+        } else {
+          for (let i = 0; i < coords.length - 1; i += 1) {
+            addAdj(coords[i], coords[i + 1]);
+          }
+        }
+      }
+
+      return adjacency;
+    }
+
+    function nearestGraphNode(graph, point) {
+      const roundedPoint = [r4(point[0]), r4(point[1])];
+      const directKey = coordKey(roundedPoint);
+      if (graph.has(directKey)) return directKey;
+
+      let bestKey = null;
+      let bestDist = Infinity;
+      for (const key of graph.keys()) {
+        const node = parseKey(key);
+        const d = dist(node, roundedPoint);
+        if (d < bestDist) {
+          bestDist = d;
+          bestKey = key;
+        }
+      }
+      return bestKey;
+    }
+
+    function aStar(levelIdx, startPoint, endPoint) {
+      const levelData = state.dataByLevel[levelIdx];
+      if (!levelData) return null;
+      if (!startPoint || !endPoint) return null;
+      const graph = levelData.graph;
+      const startKey = nearestGraphNode(graph, startPoint);
+      const endKey = nearestGraphNode(graph, endPoint);
+      if (!startKey || !endKey) return null;
+
+      const heap = new MinHeap();
+      const cameFrom = new Map();
+      const gScore = new Map();
+
+      gScore.set(startKey, 0);
+      heap.push({ key: startKey, g: 0, f: dist(parseKey(startKey), parseKey(endKey)) });
+
+      while (heap.size() > 0) {
+        const current = heap.pop();
+        if (!current) break;
+
+        const knownG = gScore.get(current.key);
+        if (knownG === undefined || current.g !== knownG) continue;
+
+        if (current.key === endKey) {
+          const path = [endKey];
+          let walk = endKey;
+          while (cameFrom.has(walk)) {
+            walk = cameFrom.get(walk);
+            path.push(walk);
+          }
+          path.reverse();
+          return path.map(parseKey);
+        }
+
+        const neighbors = graph.get(current.key) || [];
+        for (const neighbor of neighbors) {
+          const tentative = current.g + neighbor.weight;
+          const prev = gScore.get(neighbor.key);
+          if (prev === undefined || tentative < prev) {
+            cameFrom.set(neighbor.key, current.key);
+            gScore.set(neighbor.key, tentative);
+            const h = dist(neighbor.node, parseKey(endKey));
+            heap.push({ key: neighbor.key, g: tentative, f: tentative + h });
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function pathLength(path) {
+      if (!path) return Infinity;
+      if (path.length < 2) return 0;
+      let total = 0;
+      for (let i = 0; i < path.length - 1; i += 1) {
+        total += dist(path[i], path[i + 1]);
+      }
+      return total;
+    }
+
+    function levelNameFromCode(code) {
+      return { E: 0, D: 1, C: 2, B: 3 }[code] ?? null;
+    }
+
+    function splitKeyword(keyword) {
+      const raw = String(keyword || "").trim();
+      const match = raw.match(/^([EDCB])-Lvl:\s*(.+)$/i);
+      if (match) {
+        return { levelHint: levelNameFromCode(match[1].toUpperCase()), name: match[2].trim() };
+      }
+      return { levelHint: null, name: raw };
+    }
+
+    function toComparable(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function findFeatureByKeyword(keyword, preferredLevelIdx = null) {
+      const parsed = splitKeyword(keyword);
+      const target = toComparable(parsed.name);
+      if (!target) return null;
+
+      const order = [];
+      if (parsed.levelHint !== null) order.push(parsed.levelHint);
+      if (preferredLevelIdx !== null && !order.includes(preferredLevelIdx)) order.push(preferredLevelIdx);
+      for (let i = 0; i < LEVELS.length; i += 1) if (!order.includes(i)) order.push(i);
+
+      for (const lvl of order) {
+        const levelData = state.dataByLevel[lvl];
+        if (!levelData) continue;
+        for (const feature of levelData.blocks.features) {
+          const p = feature.properties || {};
+          const vals = [p.PlaceName, p.PersonName, p.PlaceNode].map(toComparable);
+          if (vals.includes(target)) {
+            return { levelIdx: lvl, feature: feature };
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function getPlacePoint(levelIdx, placeNode) {
+      const levelData = state.dataByLevel[levelIdx];
+      if (!levelData) return null;
+      return levelData.placeNodeToCoord.get(Number(placeNode)) || null;
+    }
+
+    function findNearestFacility(levelIdx, fromPlaceNode, prefix) {
+      const levelData = state.dataByLevel[levelIdx];
+      if (!levelData) return null;
+
+      const origin = getPlacePoint(levelIdx, fromPlaceNode);
+      if (!origin) return null;
+
+      let bestObjectId = null;
+      let bestLen = Infinity;
+
+      for (const feature of levelData.blocks.features) {
+        const p = feature.properties || {};
+        const placeName = String(p.PlaceName || "");
+        const placeType = String(p.PlaceType || "");
+        if (!placeName.startsWith(prefix) && !placeType.startsWith(prefix)) continue;
+
+        const dest = getPlacePoint(levelIdx, p.PlaceNode);
+        if (!dest) continue;
+        const path = aStar(levelIdx, origin, dest);
+        const len = pathLength(path);
+        if (len < bestLen) {
+          bestLen = len;
+          bestObjectId = p.OBJECTID;
+        }
+      }
+
+      return bestObjectId;
+    }
+
+    function getLeafletLayerByObjectId(levelIdx, objectId) {
+      const layerGroup = state.blockLayers[levelIdx];
+      if (!layerGroup) return null;
+      for (const key in layerGroup._layers) {
+        const layer = layerGroup._layers[key];
+        const props = (layer.feature && layer.feature.properties) || {};
+        if (Number(props.OBJECTID) === Number(objectId)) return layer;
+      }
+      return null;
+    }
+
+    function styleFunc() {
+      return { weight: 0.2, fillOpacity: 0, opacity: 0.5, color: "red" };
+    }
+
+    function selectStyle() {
+      return { color: "#00FFFF", fillOpacity: 0.5 };
+    }
+
+    function clearRouteLayers() {
+      for (let i = 0; i < LEVELS.length; i += 1) {
+        if (state.routeLayers[i]) {
+          state.maps[i].removeLayer(state.routeLayers[i]);
+          state.routeLayers[i] = null;
+        }
+        if (state.routeMarkers[i]) {
+          state.routeMarkers[i].forEach(function (m) { state.maps[i].removeLayer(m); });
+          state.routeMarkers[i] = [];
+        }
+      }
+      state.routeHighlighted = [];
+    }
+
+    function resetStyle() {
+      $("#directions").hide();
+      $("#srchResult").html("");
+      $("#route_diff_level").hide();
+      $("#continue-overlay").hide();
+      state.routeHighlighted = [];
+
+      for (let i = 0; i < LEVELS.length; i += 1) {
+        if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
+        if (state.maps[i]) {
+          state.maps[i].fitBounds([[0, 0], [90, 180]]);
+          state.maps[i].closePopup();
+        }
+      }
+      clearRouteLayers();
+    }
+
+    function getFeatureLabelContent(props) {
+      let content = "";
+      if (props.PersonName) content += "<i class='fas fa-user-alt'></i> " + props.PersonName + "<br>";
+      if (props.PlaceName) content += "<i class='fas fa-map-marker-alt'></i> " + String(props.PlaceName).replace("Steps", "Stairs").replace("Lift", "Elevator") + "<br>";
+      if (props.Contact) content += "<i class='fas fa-mobile'></i> " + props.Contact + "<br>";
+      if (props.Email) content += "<i class='fas fa-envelope'></i> " + props.Email + "<br>";
+      if (props.Details) content += "<b>Other Info: </b><br>" + String(props.Details).replace(/,/g, "<br>");
+      return content;
+    }
+
+    function onEachFeatureFunc(feature, layer) {
+      const props = feature.properties || {};
+      layer.bindTooltip(props.PlaceName || "", {
+        permanent: true,
+        direction: "center",
+        className: "labelstyle"
+      });
+
+      if (props.PlaceName && String(props.PlaceName).startsWith("Lift")) {
+        layer.bindTooltip("<i class='fas fa-person-booth fa-2x'></i>");
+      }
+      if (props.PlaceName && String(props.PlaceName).startsWith("Steps")) {
+        layer.bindTooltip("<i class='fas fa-walking fa-2x'></i>");
+      }
+
+      let popupContent = "";
+      if (props.PersonName) popupContent += "<i class='fas fa-user-alt'></i> " + props.PersonName + "<br>";
+      if (props.PlaceName) popupContent += "<i class='fas fa-map-marker-alt'></i> " + String(props.PlaceName).replace("Steps", "Stairs").replace("Lift", "Elevator");
+      layer.bindPopup(popupContent);
+
+      layer.on("mouseover", function (evt) {
+        if (state.routeHighlighted.indexOf(evt.target) === -1) {
+          evt.target.setStyle(selectStyle());
+        }
+      });
+      layer.on("mouseout", function (evt) {
+        if (state.routeHighlighted.indexOf(evt.target) !== -1) return;
+        evt.target.setStyle(styleFunc());
+        layer.closePopup();
+      });
+    }
+
+    function switchLevel(levelIdx) {
+      $("#cmap").carousel(levelIdx);
+      if (state.maps[levelIdx]) {
+        state.maps[levelIdx].invalidateSize();
+      }
+      resetStyle();
+      var ids = ["lvlE", "lvlD", "lvlC", "lvlB"];
+      for (var i = 0; i < ids.length; i++) {
+        document.getElementById(ids[i]).classList.remove("active-level");
+      }
+      document.getElementById(ids[levelIdx]).classList.add("active-level");
+    }
+
+    function makeBoundsFromFeaturesAndPath(features, pathLatLng) {
+      const points = [];
+      for (const f of features) {
+        const geom = f.geometry;
+        if (!geom) continue;
+        const stack = [geom.coordinates];
+        while (stack.length) {
+          const current = stack.pop();
+          if (!Array.isArray(current)) continue;
+          if (typeof current[0] === "number") {
+            points.push([current[1], current[0]]);
+          } else {
+            for (const child of current) stack.push(child);
+          }
+        }
+      }
+      for (const p of pathLatLng) points.push(p);
+      if (!points.length) return null;
+      return L.latLngBounds(points);
+    }
+
+    function showResult(resultBlock, isContinueSegment) {
+      const levelIdx = resultBlock[3];
+      const pathLatLng = resultBlock[1];
+      const objectIds = resultBlock[2];
+      const levelMap = state.maps[levelIdx];
+      const levelLayer = state.blockLayers[levelIdx];
+      if (!levelMap || !levelLayer) return;
+
+      for (const key in levelLayer._layers) {
+        const blk = levelLayer._layers[key];
+        if (objectIds.indexOf(blk.feature.properties.OBJECTID) !== -1) {
+          blk.setStyle(selectStyle());
+          state.routeHighlighted.push(blk);
+        }
+      }
+
+      // Route outline (dark border behind the colored line)
+      var routeOutline = new L.Polyline(pathLatLng, {
+        color: "#222",
+        weight: 9,
+        opacity: 0.7,
+        smoothFactor: 1,
+        lineCap: "round",
+        lineJoin: "round"
+      });
+
+      // Route line (bright, on top of outline)
+      var routeLine = new L.Polyline(pathLatLng, {
+        color: "#ff4444",
+        weight: 5,
+        opacity: 1,
+        smoothFactor: 1,
+        lineCap: "round",
+        lineJoin: "round"
+      });
+
+      state.routeLayers[levelIdx] = L.layerGroup([routeOutline, routeLine]).addTo(levelMap);
+
+      // Start marker (green circle)
+      if (pathLatLng.length >= 2) {
+        const startMarker = L.circleMarker(pathLatLng[0], {
+          radius: 8, color: "#fff", fillColor: "#4CAF50", fillOpacity: 1, weight: 3
+        }).addTo(levelMap);
+        startMarker.bindTooltip("Start", { permanent: false, direction: "top" });
+
+        // End marker (pin icon)
+        const endIcon = L.divIcon({
+          className: "route-end-marker",
+          html: "<div style='background:#ff4444;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);font-size:14px;'><i class='fas fa-map-pin'></i></div>",
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+        const endMarker = L.marker(pathLatLng[pathLatLng.length - 1], { icon: endIcon }).addTo(levelMap);
+        endMarker.bindTooltip("Destination", { permanent: false, direction: "top" });
+
+        state.routeMarkers[levelIdx].push(startMarker, endMarker);
+      }
+
+      const features = objectIds
+        .map(function (oid) {
+          const lyr = getLeafletLayerByObjectId(levelIdx, oid);
+          return lyr ? lyr.feature : null;
+        })
+        .filter(Boolean);
+
+      const bounds = makeBoundsFromFeaturesAndPath(features, pathLatLng);
+
+      $("#cmap").carousel(levelIdx);
+      levelMap.invalidateSize();
+      if (bounds) levelMap.fitBounds(bounds, { maxZoom: 4 });
+
+      if (!isContinueSegment) {
+        w3_close();
+      }
+    }
+
+    function routeFunc(payload) {
+      resetStyle();
+      clearRouteLayers();
+
+      const lvlResults = payload;
+      showResult(lvlResults[1], lvlResults[0]);
+
+      if (lvlResults[0] === 1) {
+        $("#continue_result").off("click").on("click", function () {
+          showResult(lvlResults[2], 1);
+          $("#continue-overlay").hide();
+        });
+        $("#route_diff_level").show();
+        $("#continue-overlay").show();
+        const nextFloor = "EDCB"[lvlResults[2][3]];
+        $("#continue_result").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
+        $("#continue-overlay button").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
+      } else {
+        $("#continue-overlay").hide();
+      }
+
+      w3_close();
+    }
+
+    function searchFunc(input) {
+      const parsed = Array.isArray(input) ? input : JSON.parse(String(input).replace(/'/g, '"'));
+      const objectId = parsed[0];
+      const levelIdx = parsed[1];
+      const facilities = parsed[2];
+
+      const blkLayer = state.blockLayers[levelIdx];
+      const levelMap = state.maps[levelIdx];
+      if (!blkLayer || !levelMap) return;
+
+      const layer = getLeafletLayerByObjectId(levelIdx, objectId);
+      if (!layer) return;
+      const props = layer.feature.properties || {};
+
+      for (let i = 0; i < LEVELS.length; i += 1) {
+        if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
+      }
+
+      layer.setStyle(selectStyle());
+      layer.openPopup();
+
+      $("#cmap").carousel(levelIdx);
+      levelMap.invalidateSize();
+      levelMap.fitBounds(layer.getBounds().pad(0.5), { maxZoom: 4 });
+
+      let content = getFeatureLabelContent(props);
+
+      if (facilities) {
+        content += "<br><br><u>Near Me</u><br>";
+
+        const maleLyr = getLeafletLayerByObjectId(levelIdx, facilities[0]);
+        const femaleLyr = getLeafletLayerByObjectId(levelIdx, facilities[1]);
+        const stairsLyr = getLeafletLayerByObjectId(levelIdx, facilities[2]);
+        const liftLyr = getLeafletLayerByObjectId(levelIdx, facilities[3]);
+
+        if (maleLyr) content += "<i class='fas fa-male'></i> " + maleLyr.feature.properties.PlaceName + " <a href='#' onclick='searchFunc([" + facilities[0] + "," + levelIdx + "])'><i class='fas fa-search-location'></i></a><br>";
+        if (femaleLyr) content += "<i class='fas fa-female'></i> " + femaleLyr.feature.properties.PlaceName + " <a href='#' onclick='searchFunc([" + facilities[1] + "," + levelIdx + "])'><i class='fas fa-search-location'></i></a><br>";
+        if (stairsLyr) content += "<i class='fas fa-walking'></i> " + stairsLyr.feature.properties.PlaceName + " <a href='#' onclick='searchFunc([" + facilities[2] + "," + levelIdx + "])'><i class='fas fa-search-location'></i></a><br>";
+        if (liftLyr) content += "<i class='fas fa-person-booth'></i> " + liftLyr.feature.properties.PlaceName + " <a href='#' onclick='searchFunc([" + facilities[3] + "," + levelIdx + "])'><i class='fas fa-search-location'></i></a><br>";
+      }
+
+      if ($("#searchBox").val() !== "") {
+        $("#srchResult").html(content);
+      }
+    }
+
+    function search() {
+      $("#directions").show();
+      const text = $("#searchBox").val();
+      const match = findFeatureByKeyword(text);
+      if (!match) {
+        $("#srchResult").html("No matching room/person found.");
+        return;
+      }
+
+      const p = match.feature.properties || {};
+      const fac = [
+        findNearestFacility(match.levelIdx, Number(p.PlaceNode), "Facility,male"),
+        findNearestFacility(match.levelIdx, Number(p.PlaceNode), "Facility,female"),
+        findNearestFacility(match.levelIdx, Number(p.PlaceNode), "Steps"),
+        findNearestFacility(match.levelIdx, Number(p.PlaceNode), "Lift")
+      ];
+
+      searchFunc([Number(p.OBJECTID), match.levelIdx, fac]);
+
+      // Auto-navigate to routing panel with "To" pre-filled
+      openNav("nav02");
+      $("#to").val($("#searchBox").val());
+      $("#from").focus();
+      activeInput = document.getElementById("from");
+    }
+
+    function routeFromTo() {
+      const fromText = $("#from").val();
+      const toText = $("#to").val();
+      const mode = $("input[name='mode']:checked").val();
+
+      const fromMatch = findFeatureByKeyword(fromText);
+      const toMatch = findFeatureByKeyword(toText);
+
+      if (!fromMatch || !toMatch) {
+        $("#srchResult").html("Unable to resolve origin or destination.");
+        return;
+      }
+
+      const fromProps = fromMatch.feature.properties || {};
+      const toProps = toMatch.feature.properties || {};
+      const fromLvl = fromMatch.levelIdx;
+      const toLvl = toMatch.levelIdx;
+
+      if (fromLvl === toLvl) {
+        const start = getPlacePoint(fromLvl, fromProps.PlaceNode);
+        const end = getPlacePoint(fromLvl, toProps.PlaceNode);
+        const path = aStar(fromLvl, start, end);
+        if (!path) {
+          $("#srchResult").html("No route found on selected level.");
+          return;
+        }
+        const pathLatLng = path.map(function (pt) { return [pt[1], pt[0]]; });
+        routeFunc([0, [null, pathLatLng, [fromProps.OBJECTID, toProps.OBJECTID], fromLvl]]);
+        return;
+      }
+
+      const viaObjectId = findNearestFacility(fromLvl, Number(fromProps.PlaceNode), String(mode));
+      if (!viaObjectId) {
+        $("#srchResult").html("No cross-floor connector found for selected mode.");
+        return;
+      }
+
+      const viaLayerFrom = getLeafletLayerByObjectId(fromLvl, viaObjectId);
+      if (!viaLayerFrom) {
+        $("#srchResult").html("Connector not found on origin level.");
+        return;
+      }
+
+      const viaName = viaLayerFrom.feature.properties.PlaceName;
+      const toLevelData = state.dataByLevel[toLvl];
+      let viaFeatureTo = null;
+      for (const feature of toLevelData.blocks.features) {
+        if (String((feature.properties || {}).PlaceName || "") === String(viaName || "")) {
+          viaFeatureTo = feature;
+          break;
+        }
+      }
+      if (!viaFeatureTo) {
+        const fallbackViaOid = findNearestFacility(toLvl, Number(toProps.PlaceNode), String(mode));
+        const viaLayerFallback = getLeafletLayerByObjectId(toLvl, fallbackViaOid);
+        viaFeatureTo = viaLayerFallback ? viaLayerFallback.feature : null;
+      }
+
+      if (!viaFeatureTo) {
+        $("#srchResult").html("Connector not found on destination level.");
+        return;
+      }
+
+      const fromPath = aStar(fromLvl, getPlacePoint(fromLvl, fromProps.PlaceNode), getPlacePoint(fromLvl, viaLayerFrom.feature.properties.PlaceNode));
+      const toPath = aStar(toLvl, getPlacePoint(toLvl, viaFeatureTo.properties.PlaceNode), getPlacePoint(toLvl, toProps.PlaceNode));
+      if (!fromPath || !toPath) {
+        $("#srchResult").html("No route available for this floor transfer.");
+        return;
+      }
+
+      const fromPathLatLng = fromPath.map(function (pt) { return [pt[1], pt[0]]; });
+      const toPathLatLng = toPath.map(function (pt) { return [pt[1], pt[0]]; });
+
+      const fromSeg = [null, fromPathLatLng, [fromProps.OBJECTID, viaLayerFrom.feature.properties.OBJECTID], fromLvl];
+      const toSeg = [null, toPathLatLng, [viaFeatureTo.properties.OBJECTID, toProps.OBJECTID], toLvl];
+      routeFunc([1, fromSeg, toSeg]);
+    }
+
+    function clearFunc() {
+      $("#searchBox").val("");
+      $("#from").val("");
+      $("#to").val("");
+      $("#searchBox").focus();
+      resetStyle();
+    }
+
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+      $("#from").focus();
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+
+    function openNav(id) {
+      const navs = ["nav01", "nav02", "nav03"];
+      for (let i = 0; i < navs.length; i += 1) {
+        document.getElementById(navs[i]).style.display = "none";
+        $("#" + navs[i] + "i").css("background-color", "black");
+      }
+      document.getElementById(id).style.display = "block";
+      $("#" + id + "i").css("background-color", "#ccc");
+    }
+
+    function categoryHtmlByLevel(levelIdx, title) {
+      const levelData = state.dataByLevel[levelIdx];
+      const feats = levelData.blocks.features;
+
+      const icons = {
+        university: "<span class='fas fa-university'></span>",
+        archive: "<span class='fas fa-archive'></span>",
+        fac: {
+          utensils: "<span class='fas fa-utensils'></span>",
+          male: "<span class='fas fa-male'></span>",
+          female: "<span class='fas fa-female'></span>",
+          tint: "<span class='fas fa-tint'></span>",
+          coffee: "<span class='fas fa-coffee'></span>",
+          book: "<span class='fas fa-book'></span>"
+        },
+        user: "<span class='fas fa-user'></span>",
+        briefcase: "<span class='fas fa-briefcase'></span>",
+        classRooms: "<span class='fas fa-chalkboard-teacher'></span>",
+        classIcon: "<span class='fas fa-chalkboard'></span>",
+        labs: "<span class='fas fa-server'></span>",
+        desktop: "<span class='fas fa-desktop'></span>",
+        offices: "<span class='fas fa-store'></span>",
+        stamp: "<span class='fas fa-stamp'></span>"
+      };
+
+      function addRows(rows, icon) {
+        let html = "";
+        rows.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+        for (const row of rows) {
+          html += "<li><a href='#' onclick='searchFunc([" + row.objectId + "," + levelIdx + "])'>" + icon + " &nbsp; " + row.name + "</a></li>";
+        }
+        html += "</ul></li>";
+        return html;
+      }
+
+      let html = "<li><a href='#'>" + icons.university + " " + title + "</a><ul>";
+
+      html += "<li><a href='#'>" + icons.archive + " Facilities</a><ul>";
+      const facilities = feats
+        .filter(function (f) { return String((f.properties || {}).PlaceType || "").startsWith("Facility"); })
+        .map(function (f) {
+          const p = f.properties || {};
+          const subtype = String(p.PlaceType || "").split(",")[1] || "book";
+          return { objectId: p.OBJECTID, name: p.PlaceName, icon: icons.fac[subtype] || icons.fac.book };
+        })
+        .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+      for (const item of facilities) {
+        html += "<li><a href='#' onclick='searchFunc([" + item.objectId + "," + levelIdx + "])'>" + item.icon + " &nbsp; " + item.name + "</a></li>";
+      }
+      html += "</ul></li>";
+
+      html += "<li><a href='#'>" + icons.user + " Faculties</a><ul>";
+      html += addRows(
+        feats
+          .filter(function (f) { return String((f.properties || {}).PlaceType || "") === "Faculty"; })
+          .map(function (f) { return { objectId: f.properties.OBJECTID, name: f.properties.PersonName }; })
+          .filter(function (f) { return !!f.name; }),
+        icons.briefcase
+      );
+
+      html += "<li><a href='#'>" + icons.classRooms + " Classrooms</a><ul>";
+      html += addRows(
+        feats
+          .filter(function (f) { return String((f.properties || {}).PlaceType || "") === "Classroom"; })
+          .map(function (f) { return { objectId: f.properties.OBJECTID, name: f.properties.PlaceName }; })
+          .filter(function (f) { return !!f.name; }),
+        icons.classIcon
+      );
+
+      html += "<li><a href='#'>" + icons.labs + " Labs</a><ul>";
+      html += addRows(
+        feats
+          .filter(function (f) { return String((f.properties || {}).PlaceType || "") === "Lab"; })
+          .map(function (f) { return { objectId: f.properties.OBJECTID, name: f.properties.PlaceName }; })
+          .filter(function (f) { return !!f.name; }),
+        icons.desktop
+      );
+
+      html += "<li><a href='#'>" + icons.offices + " Offices</a><ul>";
+      html += addRows(
+        feats
+          .filter(function (f) { return String((f.properties || {}).PlaceType || "") === "Office"; })
+          .map(function (f) { return { objectId: f.properties.OBJECTID, name: f.properties.PlaceName }; })
+          .filter(function (f) { return !!f.name; }),
+        icons.stamp
+      );
+
+      html += "</ul></li>";
+      return html;
+    }
+
+    async function loadGeoJSONData() {
+      const promises = LEVELS.map(async function (level) {
+        const [blocks, places, routes] = await Promise.all([
+          fetch("/geojson/" + level.code + "_Level_Blocks.geojson").then(function (res) { return res.json(); }),
+          fetch("/geojson/" + level.code + "_Level_Places.geojson").then(function (res) { return res.json(); }),
+          fetch("/geojson/" + level.code + "_Level_Route.geojson").then(function (res) { return res.json(); })
+        ]);
+
+        const placeNodeToCoord = new Map();
+        for (const feature of places.features || []) {
+          const p = feature.properties || {};
+          const coords = (feature.geometry || {}).coordinates;
+          if (!coords || coords.length < 2) continue;
+          placeNodeToCoord.set(Number(p.PlaceNode), [r4(coords[0]), r4(coords[1])]);
+        }
+
+        const graph = buildGraph(routes);
+        state.dataByLevel[level.idx] = {
+          blocks: blocks,
+          places: places,
+          routes: routes,
+          placeNodeToCoord: placeNodeToCoord,
+          graph: graph
+        };
+      });
+
+      await Promise.all(promises);
+    }
+
+    function initMaps() {
+      for (const level of LEVELS) {
+        const map = L.map(level.mapId, levelConfig);
+        L.imageOverlay(level.floor, imageBounds, imageOverlayOptions).addTo(map);
+        map.fitBounds(imageBounds);
+        state.maps[level.idx] = map;
+
+        L.easyButton({
+          states: [
+            {
+              stateName: "show-labels",
+              icon: "fa-tag",
+              title: "Show Labels",
+              onClick: function (control) {
+                $(".leaflet-tooltip").css("display", "block");
+                control.state("remove-labels");
+              }
+            },
+            {
+              stateName: "remove-labels",
+              icon: "fa-eye-slash",
+              title: "Hide Labels",
+              onClick: function (control) {
+                $(".leaflet-tooltip").css("display", "none");
+                control.state("show-labels");
+              }
+            }
+          ]
+        }).addTo(map);
+      }
+    }
+
+    function initBlockLayers() {
+      for (const level of LEVELS) {
+        const blockData = state.dataByLevel[level.idx].blocks;
+        const blockLayer = L.geoJSON(blockData, {
+          style: styleFunc,
+          onEachFeature: onEachFeatureFunc
+        }).addTo(state.maps[level.idx]);
+        state.blockLayers[level.idx] = blockLayer;
+      }
+    }
+
+    function initAutocomplete() {
+      const fields = [];
+      for (const level of LEVELS) {
+        const featureSet = state.dataByLevel[level.idx].blocks.features;
+        const names = new Set();
+        for (const feature of featureSet) {
+          const p = feature.properties || {};
+          [p.PlaceName, p.PersonName, p.PlaceNode].forEach(function (val) {
+            if (val === null || val === undefined) return;
+            const text = String(val).trim();
+            if (!text) return;
+            names.add(text);
+          });
+        }
+        for (const value of names) {
+          fields.push({ value: level.name + ": " + value, label: value });
+        }
+      }
+
+      fields.sort(function (a, b) { return a.label.localeCompare(b.label); });
+      state.autocompleteFields = fields;
+
+      $("input[type=text]").autocomplete({
+        source: fields,
+        minLength: 2
+      });
+    }
+
+    function initCategories() {
+      const html = [
+        categoryHtmlByLevel(0, "E Level"),
+        categoryHtmlByLevel(1, "D Level"),
+        categoryHtmlByLevel(2, "C Level"),
+        categoryHtmlByLevel(3, "B Level")
+      ].join("");
+      $("#catContent").html(html);
+      $(".categories").metisMenu({ toggle: true });
+    }
+
+    $(function () {
+      openNav("nav01");
+      initMaps();
+
+      $("#srchReset").click(function () {
+        $("#searchBox").val("").focus();
+        resetStyle();
+      });
+
+      $("#fromReset").click(function () {
+        $("#from").val("").focus();
+        clearRouteLayers();
+      });
+
+      $("#toReset").click(function () {
+        $("#to").val("").focus();
+        clearRouteLayers();
+      });
+
+      $("#swap").click(function () {
+        const temp = $("#to").val();
+        $("#to").val($("#from").val());
+        $("#from").val(temp);
+      });
+
+      $("#directions").click(function () {
+        openNav("nav02");
+        $("#from").focus();
+        $("#to").val($("#searchBox").val());
+      });
+
+      loadGeoJSONData()
+        .then(function () {
+          initBlockLayers();
+          initAutocomplete();
+          initCategories();
+          for (var i = 0; i < LEVELS.length; i++) {
+            if (state.maps[i]) state.maps[i].invalidateSize();
+          }
+        })
+        .catch(function (err) {
+          $("#srchResult").html("Failed to load map data. " + String(err));
+        });
+    });
+  </script>
+</body>
+</html>

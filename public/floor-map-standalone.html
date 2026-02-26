@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNB Faculty of Computer Science - Kiosk Map</title>
+    <style>
+        /* Base Kiosk Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            background-color: #ededed;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Map Container */
+        #map-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            max-width: 900px;
+            max-height: 900px;
+        }
+
+        /* SVG Element Styling */
+        .corridor { fill: #d7dadd; stroke: #b0b8c0; stroke-width: 1; }
+        .corridor-yellow { fill: #f3ecbe; stroke: #dcd094; stroke-width: 1; }
+        
+        /* Interactive Elements */
+        .interactive { cursor: pointer; transition: all 0.2s ease; }
+        .room { fill: #bacbdb; stroke: #8ca3b8; stroke-width: 1.5; }
+        .lab { fill: #a3b9cd; }
+        .washroom { fill: #547b97; stroke: #3c5d75; stroke-width: 1; }
+        .node { fill: #547b97; stroke: #ffffff; stroke-width: 2; filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.2)); }
+        .stairs { fill: #b5c2cd; stroke: #8ca3b8; stroke-width: 1; }
+        
+        /* Active/Tapped State */
+        .interactive.active {
+            fill: #ffd700 !important; /* Gold highlight when tapped */
+            stroke: #ccac00 !important;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+        }
+        .node.active { transform: scale(1.2); transform-origin: center; }
+
+        /* SVG Text */
+        .text-main { font-size: 14px; fill: #111; pointer-events: none; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+        .text-small { font-size: 11.5px; fill: #111; pointer-events: none; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+        .icon-path { fill: #ffffff; pointer-events: none; }
+
+        /* Info Card UI */
+        #info-card {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 300px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            padding: 24px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 10;
+        }
+
+        #info-card.visible {
+            transform: translateX(0);
+        }
+
+        #info-title {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        #info-desc {
+            margin: 0 0 20px 0;
+            color: #555;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        #close-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        #close-btn:active {
+            background: #2980b9;
+        }
+
+        /* Title overlay for kiosk context */
+        .kiosk-header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+        .kiosk-header h1 { margin: 0; font-size: 20px; color: #333; }
+        .kiosk-header p { margin: 5px 0 0 0; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div id="map-container">
+        <div class="kiosk-header">
+            <h1>Head Hall Directory</h1>
+            <p>Tap a room for more information</p>
+        </div>
+
+        <div id="info-card">
+            <h2 id="info-title">Room Name</h2>
+            <p id="info-desc">Room description goes here.</p>
+            <button id="close-btn">Close</button>
+        </div>
+
+        <svg viewBox="0 0 800 800">
+            <g transform="translate(400, 400) rotate(35) translate(-400, -350)">
+                
+                <path class="corridor" d="M 300 80 L 340 80 L 340 220 L 540 220 L 540 250 L 340 250 L 340 430 L 540 430 L 540 470 L 340 470 L 340 560 L 610 560 L 610 600 L 340 600 L 340 660 L 300 660 Z" />
+                <rect class="corridor-yellow" x="260" y="410" width="40" height="60" />
+                <rect class="corridor-yellow" x="340" y="220" width="200" height="30" />
+                <rect class="corridor-yellow" x="340" y="430" width="200" height="40" />
+                <rect class="corridor-yellow" x="520" y="320" width="130" height="150" />
+                <rect class="corridor-yellow" x="340" y="560" width="270" height="40" />
+
+                <g class="interactive room" data-title="Room C110" data-desc="Faculty Office / Meeting Room.">
+                    <rect x="250" y="80" width="50" height="30" />
+                    <text x="275" y="95" class="text-small" transform="rotate(-35, 275, 95)">C 110</text>
+                </g>
+                <g class="interactive room" data-title="Room C109" data-desc="Faculty Office.">
+                    <rect x="250" y="110" width="50" height="30" />
+                    <text x="275" y="125" class="text-small" transform="rotate(-35, 275, 125)">C 109</text>
+                </g>
+                <g class="interactive room" data-title="Room C108" data-desc="Faculty Office.">
+                    <rect x="250" y="140" width="50" height="30" />
+                    <text x="275" y="155" class="text-small" transform="rotate(-35, 275, 155)">C 108</text>
+                </g>
+                <g class="interactive room" data-title="Room C106" data-desc="Seminar Room. Available for student booking via the CS administration desk.">
+                    <rect x="240" y="170" width="60" height="60" />
+                    <text x="270" y="200" class="text-small" transform="rotate(-35, 270, 200)">C 106</text>
+                </g>
+                <g class="interactive washroom" data-title="Men's Washroom" data-desc="Public men's restroom facilities.">
+                    <rect x="230" y="230" width="70" height="50" />
+                    <path class="icon-path" d="M12,3 c1.1,0 2,0.9 2,2 c0,1.1 -0.9,2 -2,2 c-1.1,0 -2,-0.9 -2,-2 c0,-1.1 0.9,-2 2,-2 M10,8 h4 c1.1,0 2,0.9 2,2 v5 h-2 v7 h-4 v-7 h-2 v-5 c0,-1.1 0.9,-2 2,-2 z" transform="translate(265,255) rotate(-35) translate(-12,-12)" />
+                </g>
+                <g class="interactive room" data-title="Room C125" data-desc="Administrative space and storage.">
+                    <rect x="250" y="280" width="50" height="130" />
+                    <text x="275" y="345" class="text-small" transform="rotate(-35, 275, 345)">C125</text>
+                </g>
+                <g class="interactive room" data-title="Room 304" data-desc="Graduate Student Office.">
+                    <rect x="250" y="470" width="50" height="40" />
+                    <text x="275" y="490" class="text-small" transform="rotate(-35, 275, 490)">304</text>
+                </g>
+                <g class="interactive room" data-title="Room 306" data-desc="Graduate Student Office.">
+                    <rect x="230" y="510" width="70" height="50" />
+                    <text x="265" y="535" class="text-small" transform="rotate(-35, 265, 535)">306</text>
+                </g>
+                <g class="interactive washroom" data-title="Women's Washroom" data-desc="Public women's restroom facilities.">
+                    <rect x="240" y="560" width="60" height="40" />
+                    <path class="icon-path" d="M12,3 c1.1,0 2,0.9 2,2 c0,1.1 -0.9,2 -2,2 c-1.1,0 -2,-0.9 -2,-2 c0,-1.1 0.9,-2 2,-2 M15,8 l2,7 h-3 v7 h-4 v-7 h-3 l2,-7 h6 z" transform="translate(270,580) rotate(-35) translate(-12,-12)" />
+                </g>
+                <g class="interactive stairs" data-title="West Stairwell" data-desc="Stairs connecting to the main floor and lower levels.">
+                    <rect x="250" y="600" width="50" height="60" />
+                    <line x1="250" y1="610" x2="300" y2="610" stroke="#8ca3b8" />
+                    <line x1="250" y1="620" x2="300" y2="620" stroke="#8ca3b8" />
+                    <line x1="250" y1="630" x2="300" y2="630" stroke="#8ca3b8" />
+                    <line x1="250" y1="640" x2="300" y2="640" stroke="#8ca3b8" />
+                    <line x1="250" y1="650" x2="300" y2="650" stroke="#8ca3b8" />
+                    <text x="275" y="630" class="text-small" transform="rotate(-35, 275, 630)">Stairs</text>
+                </g>
+
+                <g class="interactive room lab" data-title="Biomass & Laboratory" data-desc="Specialized research facility for biomass computing and engineering projects. Authorized access only.">
+                    <rect x="340" y="80" width="160" height="110" />
+                    <text x="440" y="125" class="text-main" transform="rotate(-35, 440, 125)">Biomass &amp; ...</text>
+                    <text x="440" y="145" class="text-main" transform="rotate(-35, 440, 145)">Laboratory</text>
+                </g>
+                <g class="interactive room" data-title="Room C112" data-desc="Small meeting room.">
+                    <rect x="340" y="190" width="35" height="30" />
+                    <text x="357" y="205" class="text-small" transform="rotate(-35, 357, 205)">C112</text>
+                </g>
+                <g class="interactive room" data-title="Room C114" data-desc="Small meeting room.">
+                    <rect x="375" y="190" width="35" height="30" />
+                    <text x="392" y="205" class="text-small" transform="rotate(-35, 392, 205)">C114</text>
+                </g>
+                <g class="interactive room" data-title="Room C116" data-desc="Small meeting room.">
+                    <rect x="410" y="190" width="35" height="30" />
+                    <text x="427" y="205" class="text-small" transform="rotate(-35, 427, 205)">C116</text>
+                </g>
+                <g class="interactive room" data-title="Room C117" data-desc="Small meeting room.">
+                    <rect x="445" y="190" width="35" height="30" />
+                    <text x="462" y="205" class="text-small" transform="rotate(-35, 462, 205)">C117</text>
+                </g>
+
+                <g class="interactive stairs" data-title="Stairs C124" data-desc="Central stairwell access.">
+                    <rect x="340" y="250" width="40" height="30" />
+                    <line x1="350" y1="250" x2="350" y2="280" stroke="#8ca3b8" />
+                    <line x1="360" y1="250" x2="360" y2="280" stroke="#8ca3b8" />
+                    <line x1="370" y1="250" x2="370" y2="280" stroke="#8ca3b8" />
+                    <text x="360" y="265" class="text-small" transform="rotate(-35, 360, 265)">C124</text>
+                </g>
+                <g class="interactive room" data-title="Student Lounge" data-desc="A casual gathering space for students to study, eat, and collaborate. Includes seating and microwave access.">
+                    <rect x="380" y="250" width="160" height="70" />
+                    <text x="450" y="285" class="text-main" transform="rotate(-35, 450, 285)">Student Lounge</text>
+                    <g class="node">
+                        <circle cx="410" cy="275" r="13" />
+                        <path class="icon-path" d="M8,7 h8 v4 c0,2 -2,3 -4,3 c-2,0 -4,-1 -4,-3 z M16,8 h1 c1,0 1,1 1,2 c0,1 0,2 -1,2 h-1 z" transform="translate(410,275) rotate(-35) translate(-12,-12)" />
+                    </g>
+                </g>
+                <g class="interactive room" data-title="Classroom C-127" data-desc="Primary lecture hall for undergraduate Computer Science courses.">
+                    <rect x="340" y="320" width="110" height="110" />
+                    <text x="395" y="375" class="text-main" transform="rotate(-35, 395, 375)">C-127</text>
+                </g>
+                <g class="interactive room" data-title="CS Society Offices" data-desc="Headquarters for the Computer Science Student Society. Stop by for events, tutoring, or to purchase merch.">
+                    <rect x="450" y="320" width="70" height="110" />
+                    <text x="485" y="365" class="text-small" transform="rotate(-35, 485, 365)">Society</text>
+                    <text x="485" y="385" class="text-small" transform="rotate(-35, 485, 385)">Offices</text>
+                </g>
+
+                <text x="330" y="380" class="text-main" transform="rotate(-35, 330, 380)">UNB Faculty of</text>
+                <text x="330" y="400" class="text-main" transform="rotate(-35, 330, 400)">Computer Science</text>
+                <text x="585" y="395" class="text-main" transform="rotate(-35, 585, 395)">Head Hall</text>
+
+                <g class="interactive room lab" data-title="Analytics Everywhere Lab" data-desc="Advanced data science and analytics research laboratory. Equipped with high-performance workstations.">
+                    <rect x="390" y="470" width="130" height="90" />
+                    <text x="465" y="505" class="text-main" transform="rotate(-35, 465, 505)">Analytics</text>
+                    <text x="465" y="525" class="text-main" transform="rotate(-35, 465, 525)">Everywhere Lab</text>
+                    <g class="node">
+                        <circle cx="410" cy="505" r="16" />
+                        <path class="icon-path" d="M4,18 h16 v2 h-16 z M6,10 h3 v7 h-3 z M10.5,6 h3 v11 h-3 z M15,13 h3 v4 h-3 z" transform="translate(410,505) rotate(-35) translate(-12,-12)" />
+                    </g>
+                </g>
+                <g class="interactive room" data-title="Room 317" data-desc="Computer lab / tutorial room.">
+                    <rect x="520" y="470" width="90" height="90" />
+                    <text x="565" y="515" class="text-main" transform="rotate(-35, 565, 515)">317</text>
+                </g>
+
+                <g class="interactive room" data-title="Room 323" data-desc="Faculty Office.">
+                    <rect x="340" y="600" width="35" height="60" />
+                    <text x="357" y="630" class="text-small" transform="rotate(-35, 357, 630)">323</text>
+                </g>
+                <g class="interactive room" data-title="Room 322" data-desc="Faculty Office.">
+                    <rect x="375" y="600" width="35" height="60" />
+                    <text x="392" y="630" class="text-small" transform="rotate(-35, 392, 630)">322</text>
+                </g>
+                <g class="interactive room" data-title="Room 321" data-desc="Faculty Office.">
+                    <rect x="410" y="600" width="35" height="60" />
+                    <text x="427" y="630" class="text-small" transform="rotate(-35, 427, 630)">321</text>
+                </g>
+                <g class="interactive room" data-title="Room 320" data-desc="Faculty Office.">
+                    <rect x="445" y="600" width="35" height="60" />
+                    <text x="462" y="630" class="text-small" transform="rotate(-35, 462, 630)">320</text>
+                </g>
+                <g class="interactive room" data-title="Room 319" data-desc="Faculty Office.">
+                    <rect x="480" y="600" width="35" height="60" />
+                    <text x="497" y="630" class="text-small" transform="rotate(-35, 497, 630)">319</text>
+                </g>
+                <g class="interactive room" data-title="Room 316" data-desc="Server room / IT maintenance.">
+                    <rect x="515" y="560" width="60" height="100" />
+                    <text x="545" y="610" class="text-small" transform="rotate(-35, 545, 610)">316</text>
+                </g>
+                
+                <g class="interactive node" data-title="Dean's Office" data-desc="Main administrative office for the Faculty of Computer Science.">
+                    <circle cx="260" cy="430" r="18" />
+                    <path class="icon-path" d="M12,5 L4,9 L12,13 L20,9 Z M6,10 v4 c0,2 4,3 6,3 c2,0 6,-1 6,-3 v-4 L12,15 Z" transform="translate(260,430) rotate(-35) translate(-12,-12)" />
+                </g>
+                
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        // Grab elements from the DOM
+        const interactables = document.querySelectorAll('.interactive');
+        const infoCard = document.getElementById('info-card');
+        const infoTitle = document.getElementById('info-title');
+        const infoDesc = document.getElementById('info-desc');
+        const closeBtn = document.getElementById('close-btn');
+
+        // Function to handle tapping a room
+        interactables.forEach(element => {
+            element.addEventListener('click', function() {
+                // 1. Remove 'active' class from all elements
+                interactables.forEach(el => el.classList.remove('active'));
+                
+                // 2. Add 'active' class to the tapped element
+                this.classList.add('active');
+                
+                // 3. Update the info card text using the data attributes
+                infoTitle.textContent = this.getAttribute('data-title');
+                infoDesc.textContent = this.getAttribute('data-desc');
+                
+                // 4. Slide the info card into view
+                infoCard.classList.add('visible');
+            });
+        });
+
+        // Function to handle the close button
+        closeBtn.addEventListener('click', function() {
+            infoCard.classList.remove('visible');
+            interactables.forEach(el => el.classList.remove('active'));
+        });
+
+        // Close the card if tapping on an empty area of the map (the background or corridor)
+        document.querySelector('svg').addEventListener('click', function(e) {
+            // Check if what we clicked isn't an interactive element or part of one
+            if (!e.target.closest('.interactive')) {
+                infoCard.classList.remove('visible');
+                interactables.forEach(el => el.classList.remove('active'));
+            }
+        });
+    </script>
+</body>
+</html>
