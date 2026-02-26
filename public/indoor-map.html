@@ -217,6 +217,49 @@
         margin-right: 18px;
       }
     }
+
+    /* ── Virtual Keyboard ── */
+    #kiosk-keyboard {
+      max-width: 600px;
+      margin: 10px auto;
+      padding: 10px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .kb-key {
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 18px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      margin: 2px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .kb-key:hover, .kb-key:active {
+      background: #e0f2f1;
+    }
+    .kb-key.kb-space {
+      flex: 1;
+      max-width: 300px;
+    }
+    .kb-key.kb-bksp {
+      font-size: 20px;
+      min-width: 52px;
+    }
   </style>
 </head>
 <body style="background-color:#F5F5F5">
@@ -316,8 +359,6 @@
     </div>
 
     <div class="container">
-      <center>
-        <br>
         <div id="cmap" class="carousel slide" data-ride="carousel" data-interval="false">
           <div class="carousel-inner">
             <div class="item active"><div id="ELevel"></div></div>
@@ -327,9 +368,60 @@
           </div>
         </div>
 
-      </center>
+        <!-- Virtual Keyboard -->
+        <div id="kiosk-keyboard">
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('1')">1</button>
+            <button class="kb-key" onclick="kioskKey('2')">2</button>
+            <button class="kb-key" onclick="kioskKey('3')">3</button>
+            <button class="kb-key" onclick="kioskKey('4')">4</button>
+            <button class="kb-key" onclick="kioskKey('5')">5</button>
+            <button class="kb-key" onclick="kioskKey('6')">6</button>
+            <button class="kb-key" onclick="kioskKey('7')">7</button>
+            <button class="kb-key" onclick="kioskKey('8')">8</button>
+            <button class="kb-key" onclick="kioskKey('9')">9</button>
+            <button class="kb-key" onclick="kioskKey('0')">0</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('Q')">Q</button>
+            <button class="kb-key" onclick="kioskKey('W')">W</button>
+            <button class="kb-key" onclick="kioskKey('E')">E</button>
+            <button class="kb-key" onclick="kioskKey('R')">R</button>
+            <button class="kb-key" onclick="kioskKey('T')">T</button>
+            <button class="kb-key" onclick="kioskKey('Y')">Y</button>
+            <button class="kb-key" onclick="kioskKey('U')">U</button>
+            <button class="kb-key" onclick="kioskKey('I')">I</button>
+            <button class="kb-key" onclick="kioskKey('O')">O</button>
+            <button class="kb-key" onclick="kioskKey('P')">P</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" onclick="kioskKey('A')">A</button>
+            <button class="kb-key" onclick="kioskKey('S')">S</button>
+            <button class="kb-key" onclick="kioskKey('D')">D</button>
+            <button class="kb-key" onclick="kioskKey('F')">F</button>
+            <button class="kb-key" onclick="kioskKey('G')">G</button>
+            <button class="kb-key" onclick="kioskKey('H')">H</button>
+            <button class="kb-key" onclick="kioskKey('J')">J</button>
+            <button class="kb-key" onclick="kioskKey('K')">K</button>
+            <button class="kb-key" onclick="kioskKey('L')">L</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+            <button class="kb-key" onclick="kioskKey('Z')">Z</button>
+            <button class="kb-key" onclick="kioskKey('X')">X</button>
+            <button class="kb-key" onclick="kioskKey('C')">C</button>
+            <button class="kb-key" onclick="kioskKey('V')">V</button>
+            <button class="kb-key" onclick="kioskKey('B')">B</button>
+            <button class="kb-key" onclick="kioskKey('N')">N</button>
+            <button class="kb-key" onclick="kioskKey('M')">M</button>
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key kb-space" onclick="kioskKey(' ')">SPACE</button>
+          </div>
+        </div>
+
     </div>
-    <br>
   </div>
 
 
@@ -340,6 +432,23 @@
   <div id="ent5" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">(5) Dineen Dr (other)</h4></div><div class="modal-body">Image not available in this build.</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
 
   <script>
+    /* ── Kiosk virtual keyboard ── */
+    var activeInput = null;
+    $(document).on("focus", "input[type=text]", function() { activeInput = this; });
+
+    function kioskKey(char) {
+      if (!activeInput) activeInput = document.getElementById("searchBox");
+      activeInput.focus();
+      if (char === "BACKSPACE") {
+        activeInput.value = activeInput.value.slice(0, -1);
+      } else if (char === " ") {
+        activeInput.value += " ";
+      } else {
+        activeInput.value += char;
+      }
+      $(activeInput).trigger("input").autocomplete("search", activeInput.value);
+    }
+
     const LEVELS = [
       { code: "E", idx: 0, name: "E-Lvl", mapId: "ELevel", floor: "/floorplans/E_Level.png" },
       { code: "D", idx: 1, name: "D-Lvl", mapId: "DLevel", floor: "/floorplans/D_Level.jpg" },
@@ -652,7 +761,7 @@
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
         if (state.maps[i]) {
-          state.maps[i].setZoom(2.45);
+          state.maps[i].fitBounds([[0, 0], [90, 180]]);
           state.maps[i].closePopup();
         }
       }
@@ -764,7 +873,7 @@
 
       $("#cmap").carousel(levelIdx);
       levelMap.invalidateSize();
-      if (bounds) levelMap.fitBounds(bounds);
+      if (bounds) levelMap.fitBounds(bounds, { maxZoom: 4 });
 
       if (!isContinueSegment) {
         w3_close();
@@ -811,9 +920,8 @@
       layer.openPopup();
 
       $("#cmap").carousel(levelIdx);
-      levelMap.fitBounds(layer.getBounds().pad(-0.2));
       levelMap.invalidateSize();
-      w3_close();
+      levelMap.fitBounds(layer.getBounds().pad(0.5), { maxZoom: 4 });
 
       let content = getFeatureLabelContent(props);
 
@@ -854,6 +962,12 @@
       ];
 
       searchFunc([Number(p.OBJECTID), match.levelIdx, fac]);
+
+      // Auto-navigate to routing panel with "To" pre-filled
+      openNav("nav02");
+      $("#to").val($("#searchBox").val());
+      $("#from").focus();
+      activeInput = document.getElementById("from");
     }
 
     function routeFromTo() {
