@@ -1713,16 +1713,6 @@
             return { levelIdx: lvl, feature: feature };
           }
 
-          if (normalizedVals.some(function (val) {
-            if (!val) return false;
-            for (const candidate of normalizedVariants) {
-              if (candidate.length < 4) continue;
-              if (val.includes(candidate) || candidate.includes(val)) return true;
-            }
-            return false;
-          })) {
-            return { levelIdx: lvl, feature: feature };
-          }
         }
       }
 
