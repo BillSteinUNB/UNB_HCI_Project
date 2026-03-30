@@ -1082,6 +1082,43 @@
       color: #0f172a;
     }
 
+    .you-are-here-marker {
+      background: transparent;
+      border: 0;
+    }
+
+    .you-are-here-marker .marker-core {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #0f9d8f;
+      border: 4px solid #ffffff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+    }
+
+    .you-are-here-marker .marker-core::after {
+      content: "";
+      position: absolute;
+      inset: -9px;
+      border-radius: 50%;
+      border: 2px solid rgba(15, 157, 143, 0.35);
+    }
+
+    .leaflet-tooltip.you-are-here-label {
+      display: block;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(15, 157, 143, 0.96);
+      color: #ffffff;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
     body.keyboard-open #continue-overlay {
       bottom: 330px;
     }
@@ -1505,7 +1542,8 @@
       dataByLevel: {},
       autocompleteFields: [],
       diffLevelPayload: null,
-      labelsVisible: false
+      labelsVisible: false,
+      kioskMarker: null
     };
 
     function r4(value) {
@@ -1943,6 +1981,68 @@
       if (props.Email) content += "<i class='fas fa-envelope'></i> " + props.Email + "<br>";
       if (props.Details) content += "<b>Other Info: </b><br>" + String(props.Details).replace(/,/g, "<br>");
       return content;
+    }
+
+    function getFeatureCenter(feature) {
+      const geom = feature && feature.geometry;
+      if (!geom || !Array.isArray(geom.coordinates)) return null;
+
+      const points = [];
+      const stack = [geom.coordinates];
+      while (stack.length) {
+        const current = stack.pop();
+        if (!Array.isArray(current)) continue;
+        if (typeof current[0] === "number") {
+          points.push([current[1], current[0]]);
+        } else {
+          for (const child of current) stack.push(child);
+        }
+      }
+
+      if (!points.length) return null;
+
+      let lat = 0;
+      let lng = 0;
+      for (const point of points) {
+        lat += point[0];
+        lng += point[1];
+      }
+
+      return [lat / points.length, lng / points.length];
+    }
+
+    function initKioskMarker() {
+      if (state.kioskMarker) {
+        state.maps[2].removeLayer(state.kioskMarker);
+        state.kioskMarker = null;
+      }
+
+      const match = findFeatureByKeyword("C-Lvl: Windsor St (CS)", 2);
+      if (!match || match.levelIdx !== 2) return;
+
+      const props = match.feature.properties || {};
+      const placePoint = props.PlaceNode ? getPlacePoint(2, props.PlaceNode) : null;
+      const markerPoint = placePoint ? [placePoint[1], placePoint[0]] : getFeatureCenter(match.feature);
+      if (!markerPoint) return;
+
+      const marker = L.marker(markerPoint, {
+        icon: L.divIcon({
+          className: "you-are-here-marker",
+          html: "<div class='marker-core'></div>",
+          iconSize: [34, 34],
+          iconAnchor: [17, 17]
+        }),
+        zIndexOffset: 1000
+      }).addTo(state.maps[2]);
+
+      marker.bindTooltip("You Are Here", {
+        permanent: true,
+        direction: "top",
+        offset: [0, -18],
+        className: "you-are-here-label"
+      });
+
+      state.kioskMarker = marker;
     }
 
     function onEachFeatureFunc(feature, layer) {
@@ -2511,6 +2611,7 @@
           initBlockLayers();
           initAutocomplete();
           initCategories();
+          initKioskMarker();
           for (var i = 0; i < LEVELS.length; i++) {
             if (state.maps[i]) state.maps[i].invalidateSize();
           }
