@@ -6,7 +6,7 @@ export const MapScreen: React.FC = () => {
     <ScreenContainer className="flex flex-col h-full">
       <iframe
         src="/indoor-map.html"
-        title="Head Hall Indoor Map"
+        title="Information Technology Center Indoor Map"
         className="w-full flex-1 border-0"
         allow="fullscreen"
         style={{ minHeight: 0 }}

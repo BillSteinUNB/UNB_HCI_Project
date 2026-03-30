@@ -26,7 +26,7 @@ const App: React.FC = () => {
       case ScreenName.EVENTS: return "Today's Events";
       case ScreenName.BUILDING_INFO: return 'Building Information';
       case ScreenName.MAPS: return 'Floor Maps';
-      default: return 'Head Hall';
+      default: return 'Information Technology Center';
     }
   };
 
