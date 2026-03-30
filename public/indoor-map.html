@@ -581,7 +581,7 @@
 
     .kiosk-action-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-top: 16px;
     }
@@ -598,12 +598,12 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background: linear-gradient(180deg, #14b8a6 0%, #0f9d8f 100%) !important;
+      background: linear-gradient(180deg, #0ea5a3 0%, #0b8f8c 100%) !important;
       color: #ffffff !important;
       font-size: 17px;
       font-weight: 800;
       letter-spacing: -0.01em;
-      box-shadow: 0 16px 32px rgba(15, 157, 143, 0.28);
+      box-shadow: 0 10px 20px rgba(14, 165, 163, 0.18);
       transition: 0.18s ease;
       cursor: pointer;
       text-align: center;
@@ -618,13 +618,6 @@
       transform: translateY(-1px);
       filter: saturate(1.06);
       outline: none;
-    }
-
-    .kiosk-btn.secondary {
-      background: rgba(241, 245, 249, 0.98) !important;
-      color: var(--text) !important;
-      border: 1px solid rgba(148, 163, 184, 0.24) !important;
-      box-shadow: none;
     }
 
     .kiosk-btn.success {
@@ -1254,10 +1247,6 @@
               <button type="button" class="kiosk-btn" onclick="routeFromTo()">
                 <i class="fas fa-route"></i>
                 Show Route
-              </button>
-              <button type="button" class="kiosk-btn secondary" onclick="resetFromToKiosk(); $('#to').focus();">
-                <i class="fas fa-undo"></i>
-                Reset Start
               </button>
             </div>
           </div>
