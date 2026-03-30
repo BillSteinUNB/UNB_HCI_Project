@@ -951,10 +951,13 @@
       justify-content: center;
       gap: 8px;
       margin-bottom: 8px;
+      width: 100%;
     }
 
     .kb-key {
-      min-width: 56px;
+      flex: 1 1 0;
+      min-width: 0;
+      max-width: 56px;
       min-height: 56px;
       padding: 0 8px;
       font-size: 20px;
@@ -982,8 +985,43 @@
     }
 
     .kb-key.kb-bksp {
-      min-width: 72px;
-      font-size: 16px;
+      flex: 1.35 1 0;
+      max-width: 86px;
+      font-size: 18px;
+      background: #e2e8f0;
+      border-color: rgba(148, 163, 184, 0.36);
+    }
+
+    .kb-key.kb-bksp i {
+      font-size: 22px;
+    }
+
+    .ui-autocomplete {
+      z-index: 1200 !important;
+      max-height: 280px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .ui-menu .ui-menu-item-wrapper {
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #0f172a;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .ui-menu .ui-state-active,
+    .ui-menu .ui-menu-item-wrapper.ui-state-active {
+      margin: 0;
+      border: 0;
+      background: #dff6f2;
+      color: #0f172a;
     }
 
     body.keyboard-open #continue-overlay {
@@ -1026,9 +1064,13 @@
       }
 
       .kb-key {
-        min-width: 42px;
+        max-width: 44px;
         min-height: 48px;
         font-size: 16px;
+      }
+
+      .kb-key.kb-bksp {
+        max-width: 68px;
       }
     }
   </style>
@@ -1245,7 +1287,6 @@
             <button class="kb-key" onclick="kioskKey('L')">L</button>
           </div>
           <div class="kb-row">
-            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">Bksp</button>
             <button class="kb-key" onclick="kioskKey('Z')">Z</button>
             <button class="kb-key" onclick="kioskKey('X')">X</button>
             <button class="kb-key" onclick="kioskKey('C')">C</button>
@@ -1253,10 +1294,14 @@
             <button class="kb-key" onclick="kioskKey('B')">B</button>
             <button class="kb-key" onclick="kioskKey('N')">N</button>
             <button class="kb-key" onclick="kioskKey('M')">M</button>
-            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">Bksp</button>
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')" aria-label="Backspace">
+              <i class="fas fa-backspace"></i>
+            </button>
           </div>
           <div class="kb-row">
+            <button class="kb-key kb-bksp" onclick="clearActiveInput()">Clear</button>
             <button class="kb-key kb-space" onclick="kioskKey(' ')">SPACE</button>
+            <button class="kb-key kb-bksp" onclick="hideKeyboard()">Done</button>
           </div>
         </div>
 
@@ -1290,6 +1335,10 @@
     $(document).on("focus", "input[type=text]", function () {
       activeInput = this;
       showKeyboard();
+      const $input = $(this);
+      if ($input.data("ui-autocomplete")) {
+        $input.autocomplete("search", this.value);
+      }
     });
 
     $(document).on("mousedown touchstart", function (evt) {
@@ -1313,6 +1362,17 @@
       if ($input.data("ui-autocomplete")) {
         $input.autocomplete("search", activeInput.value);
       }
+    }
+
+    function clearActiveInput() {
+      if (!activeInput) activeInput = document.getElementById("searchBox");
+      activeInput.value = "";
+      const $input = $(activeInput);
+      $input.trigger("input");
+      if ($input.data("ui-autocomplete")) {
+        $input.autocomplete("search", "");
+      }
+      activeInput.focus();
     }
 
     const LEVELS = [
@@ -2324,9 +2384,10 @@
       fields.sort(function (a, b) { return a.label.localeCompare(b.label); });
       state.autocompleteFields = fields;
 
-      $("input[type=text]").autocomplete({
+      $("#searchBox, #from, #to").autocomplete({
         source: fields,
-        minLength: 2
+        minLength: 0,
+        appendTo: "#mySidebar"
       });
     }
 
