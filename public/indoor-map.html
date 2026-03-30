@@ -830,6 +830,64 @@
       cursor: pointer;
     }
 
+    #labelToggle {
+      position: fixed;
+      top: 20px;
+      right: 92px;
+      z-index: 1090;
+      min-width: 168px;
+      height: 64px;
+      padding: 0 18px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      color: #0f172a;
+      box-shadow: var(--soft-shadow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+
+    #labelToggle .toggle-copy {
+      white-space: nowrap;
+    }
+
+    #labelToggle .toggle-switch {
+      position: relative;
+      width: 58px;
+      height: 32px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      transition: background 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    #labelToggle .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
+      transition: transform 0.18s ease;
+    }
+
+    #labelToggle.labels-visible .toggle-switch {
+      background: #14b8a6;
+    }
+
+    #labelToggle.labels-visible .toggle-switch::after {
+      transform: translateX(26px);
+    }
+
     .kiosk-stage {
       position: relative;
       height: 100%;
@@ -1040,9 +1098,22 @@
         top: 12px;
         bottom: 12px;
       }
+
+      #labelToggle {
+        right: 88px;
+      }
     }
 
     @media screen and (max-width: 720px) {
+      #labelToggle {
+        top: 12px;
+        right: 82px;
+        min-width: 150px;
+        height: 56px;
+        padding: 0 16px;
+        font-size: 14px;
+      }
+
       .kiosk-toolbar {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1087,6 +1158,10 @@
     <button type="button" id="panelToggle" onclick="w3_open()">
       <i class="fas fa-bars"></i>
       <span class="sr-only">Open controls</span>
+    </button>
+    <button type="button" id="labelToggle" onclick="toggleLabels()">
+      <span class="toggle-copy">Labels On</span>
+      <span class="toggle-switch" aria-hidden="true"></span>
     </button>
 
     <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" id="mySidebar">
@@ -1429,7 +1504,8 @@
       highlighted: [],
       dataByLevel: {},
       autocompleteFields: [],
-      diffLevelPayload: null
+      diffLevelPayload: null,
+      labelsVisible: false
     };
 
     function r4(value) {
@@ -1821,6 +1897,24 @@
         paddingBottomRight: desktop ? [28, 28] : [20, 20],
         maxZoom: maxZoom
       };
+    }
+
+    function setLabelsVisible(isVisible) {
+      state.labelsVisible = !!isVisible;
+      $(".leaflet-tooltip.labelstyle").css("display", state.labelsVisible ? "block" : "none");
+
+      var toggle = document.getElementById("labelToggle");
+      if (!toggle) return;
+      toggle.classList.toggle("labels-visible", state.labelsVisible);
+
+      var copy = toggle.querySelector(".toggle-copy");
+      if (copy) {
+        copy.textContent = state.labelsVisible ? "Labels Off" : "Labels On";
+      }
+    }
+
+    function toggleLabels() {
+      setLabelsVisible(!state.labelsVisible);
     }
 
     function resetStyle() {
@@ -2325,29 +2419,6 @@
 
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        L.easyButton({
-          position: 'topright',
-          states: [
-            {
-              stateName: "show-labels",
-              icon: "fa-tag",
-              title: "Show Labels",
-              onClick: function (control) {
-                $(".leaflet-tooltip").css("display", "block");
-                control.state("remove-labels");
-              }
-            },
-            {
-              stateName: "remove-labels",
-              icon: "fa-eye-slash",
-              title: "Hide Labels",
-              onClick: function (control) {
-                $(".leaflet-tooltip").css("display", "none");
-                control.state("show-labels");
-              }
-            }
-          ]
-        }).addTo(map);
       }
     }
 
@@ -2405,6 +2476,7 @@
     $(function () {
       openNav("nav01");
       initMaps();
+      setLabelsVisible(false);
       $(window).on("resize", syncPanelState);
 
       $("#srchReset").click(function () {
