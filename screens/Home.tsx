@@ -32,8 +32,7 @@ export const HomeScreen: React.FC<HomeProps> = ({ onNavigate }) => {
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#C41230] text-white flex items-center justify-center font-black text-2xl tracking-tighter rounded-lg shadow-md">UNB</div>
           <div>
-            <h1 className="text-4xl font-black text-[#1A1A1A] tracking-tight uppercase">Head Hall</h1>
-            <p className="text-xl text-gray-500 font-medium">Engineering Building</p>
+            <h1 className="text-4xl font-black text-[#1A1A1A] tracking-tight uppercase">Information Technology Center</h1>
           </div>
         </div>
         <div className="text-right">
