@@ -425,45 +425,6 @@
       text-transform: uppercase;
     }
 
-    .kiosk-toolbar {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .kiosk-tab {
-      appearance: none;
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      background: rgba(241, 245, 249, 0.92);
-      color: var(--text);
-      border-radius: 18px;
-      min-height: 72px;
-      padding: 10px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      transition: 0.18s ease;
-    }
-
-    .kiosk-tab i {
-      font-size: 20px;
-    }
-
-    .kiosk-tab.active-tab,
-    .kiosk-tab:hover,
-    .kiosk-tab:focus {
-      background: linear-gradient(180deg, rgba(15, 157, 143, 0.95), rgba(10, 124, 114, 0.98));
-      border-color: rgba(45, 212, 191, 0.42);
-      color: #ffffff;
-      outline: none;
-      transform: translateY(-1px);
-    }
-
     .level-cubes {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -520,16 +481,19 @@
       padding-top: 4px;
     }
 
-    #nav01,
-    #nav02,
-    #nav03 {
-      display: none;
+    #nav02 {
+      display: block;
       height: 100%;
       overflow-y: auto;
       padding-right: 6px !important;
       padding-top: 6px;
       padding-bottom: 12px;
       background: transparent !important;
+    }
+
+    #nav01,
+    #nav03 {
+      display: none !important;
     }
 
     .pane-title {
@@ -1154,10 +1118,6 @@
         font-size: 14px;
       }
 
-      .kiosk-toolbar {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
       .kiosk-action-row {
         grid-template-columns: 1fr;
       }
@@ -1211,25 +1171,6 @@
         </div>
       </div>
 
-      <div class="kiosk-toolbar">
-        <button type="button" class="kiosk-tab" id="nav01i" onclick="openNav('nav01')">
-          <i class="fas fa-search"></i>
-          <span>Find</span>
-        </button>
-        <button type="button" class="kiosk-tab" id="nav02i" onclick="openNav('nav02')">
-          <i class="fas fa-directions"></i>
-          <span>Route</span>
-        </button>
-        <button type="button" class="kiosk-tab" id="nav03i" onclick="openNav('nav03')">
-          <i class="fas fa-sitemap"></i>
-          <span>Browse</span>
-        </button>
-        <button type="button" class="kiosk-tab" onclick="clearFunc()">
-          <i class="fas fa-eraser"></i>
-          <span>Reset</span>
-        </button>
-      </div>
-
       <div class="level-cubes">
         <a href="javascript:void(0)" id="lvlB" data-label="B Level" onclick="switchLevel(3)">B</a>
         <a href="javascript:void(0)" id="lvlC" data-label="C Level" class="active-level" onclick="switchLevel(2)">C</a>
@@ -1238,28 +1179,6 @@
       </div>
 
       <div class="panel-content">
-        <div id="nav01" class="w3-bar-block">
-          <div class="kiosk-card">
-            <label class="field-label" for="searchBox">Search target</label>
-            <div class="kiosk-input-row">
-              <input type="text" id="searchBox" placeholder="Room or name">
-              <input type="reset" id="srchReset" value="x">
-            </div>
-            <div class="kiosk-action-row">
-              <button type="button" class="kiosk-btn" onclick="search()">
-                <i class="fas fa-search"></i>
-                Find
-              </button>
-              <button type="button" class="kiosk-btn secondary" id="directions" hidden>
-                <i class="fas fa-directions"></i>
-                Route There
-              </button>
-            </div>
-          </div>
-
-          <div id="srchResult"></div>
-        </div>
-
         <div id="nav02">
           <div class="kiosk-card">
             <div class="routing-rows">
@@ -1294,9 +1213,9 @@
                 <i class="fas fa-route"></i>
                 Show Route
               </button>
-              <button type="button" class="kiosk-btn success" onclick="$('#from').val('C-Lvl: Windsor St (CS)'); $('#to').focus();">
-                <i class="fas fa-map-marker-alt"></i>
-                Start Here
+              <button type="button" class="kiosk-btn secondary" onclick="resetFromToKiosk(); $('#to').focus();">
+                <i class="fas fa-undo"></i>
+                Reset Start
               </button>
             </div>
           </div>
@@ -1320,13 +1239,6 @@
       </p>
     </div>
 
-        <div id="nav03">
-          <div id="cat">
-            <ul class="categories">
-              <div id="catContent"></div>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
     </div>
@@ -1453,7 +1365,7 @@
     });
 
     function kioskKey(char) {
-      if (!activeInput) activeInput = document.getElementById("searchBox");
+      if (!activeInput) activeInput = document.getElementById("to");
       activeInput.focus();
       if (char === "BACKSPACE") {
         activeInput.value = activeInput.value.slice(0, -1);
@@ -1471,7 +1383,7 @@
     }
 
     function clearActiveInput() {
-      if (!activeInput) activeInput = document.getElementById("searchBox");
+      if (!activeInput) activeInput = document.getElementById("to");
       activeInput.value = "";
       const $input = $(activeInput);
       $input.trigger("input");
@@ -1525,6 +1437,7 @@
 
     const imageBounds = [[0, 0], [90, 180]];
     const imageOverlayOptions = { opacity: 0.85 };
+    const DEFAULT_ORIGIN = "C-Lvl: Windsor St (CS)";
 
     const state = {
       maps: [],
@@ -1543,6 +1456,12 @@
 
     function r4(value) {
       return Math.round(Number(value) * 10000) / 10000;
+    }
+
+    function resetFromToKiosk() {
+      $("#from").val(DEFAULT_ORIGIN);
+      $("#routeStatus").html("");
+      clearRouteLayers();
     }
 
     function coordKey(pt) {
@@ -2323,14 +2242,26 @@
       const props = (feature && feature.properties) || {};
       if (!props.PlaceNode) return;
 
-      const originMatch = findFeatureByKeyword("C-Lvl: Windsor St (CS)", 2);
+      const originMatch = findFeatureByKeyword(DEFAULT_ORIGIN, 2);
       if (!originMatch) return;
 
       $("#routeStatus").html("");
-      $("#from").val("C-Level: Windsor St (CS)");
+      $("#from").val(DEFAULT_ORIGIN);
       $("#to").val(getFeatureDisplayName(levelIdx, feature) || String(props.PlaceName || props.PersonName || ""));
       openNav("nav02");
       routeBetweenMatches(originMatch, { levelIdx: levelIdx, feature: feature });
+    }
+
+    function previewDestination(value) {
+      const text = String(value || "").trim();
+      if (!text) return;
+      const match = findFeatureByKeyword(text);
+      if (!match) return;
+      searchFunc([Number(match.feature.properties.OBJECTID), match.levelIdx]);
+      $("#to").val(getFeatureDisplayName(match.levelIdx, match.feature) || text);
+      if (!$("#from").val().trim()) {
+        $("#from").val(DEFAULT_ORIGIN);
+      }
     }
 
     function searchFunc(input) {
@@ -2417,13 +2348,12 @@
     }
 
     function clearFunc() {
-      $("#searchBox").val("");
-      $("#from").val("");
+      $("#from").val(DEFAULT_ORIGIN);
       $("#to").val("");
       resetStyle();
       switchLevel(2);
-      openNav("nav01");
-      $("#searchBox").focus();
+      openNav("nav02");
+      $("#to").focus();
     }
 
     function w3_open() {
@@ -2436,13 +2366,8 @@
     }
 
     function openNav(id) {
-      const navs = ["nav01", "nav02", "nav03"];
-      for (let i = 0; i < navs.length; i += 1) {
-        document.getElementById(navs[i]).style.display = "none";
-        $("#" + navs[i] + "i").removeClass("active-tab");
-      }
-      document.getElementById(id).style.display = "block";
-      $("#" + id + "i").addClass("active-tab");
+      var routePane = document.getElementById("nav02");
+      if (routePane) routePane.style.display = "block";
       setPanelOpen(true);
     }
 
@@ -2619,10 +2544,20 @@
       fields.sort(function (a, b) { return a.label.localeCompare(b.label); });
       state.autocompleteFields = fields;
 
-      $("#searchBox, #from, #to").autocomplete({
+      $("#from, #to").autocomplete({
         source: fields,
         minLength: 0,
-        appendTo: "#mySidebar"
+        appendTo: "#mySidebar",
+        select: function (event, ui) {
+          if (this.id === "to") {
+            previewDestination(ui.item.value);
+          }
+        },
+        change: function () {
+          if (this.id === "to") {
+            previewDestination(this.value);
+          }
+        }
       });
     }
 
@@ -2638,15 +2573,10 @@
     }
 
     $(function () {
-      openNav("nav01");
+      openNav("nav02");
       initMaps();
       setLabelsVisible(false);
       $(window).on("resize", syncPanelState);
-
-      $("#srchReset").click(function () {
-        $("#searchBox").val("").focus();
-        resetStyle();
-      });
 
       $("#fromReset").click(function () {
         $("#from").val("").focus();
@@ -2664,26 +2594,20 @@
         $("#from").val(temp);
       });
 
-      $("#directions").click(function () {
-        openNav("nav02");
-        $("#from").focus();
-        $("#to").val($("#searchBox").val());
-      });
-
       loadGeoJSONData()
         .then(function () {
           initBlockLayers();
           initAutocomplete();
-          initCategories();
           initKioskMarker();
           for (var i = 0; i < LEVELS.length; i++) {
             if (state.maps[i]) state.maps[i].invalidateSize();
           }
           switchLevel(2);
+          resetFromToKiosk();
           applyDestinationFromQuery();
         })
         .catch(function (err) {
-          $("#srchResult").html("Failed to load map data. " + String(err));
+          $("#routeStatus").html("Failed to load map data. " + String(err));
         });
     });
   </script>
