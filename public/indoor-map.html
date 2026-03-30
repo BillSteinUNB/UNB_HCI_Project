@@ -1543,7 +1543,8 @@
       autocompleteFields: [],
       diffLevelPayload: null,
       labelsVisible: false,
-      kioskMarker: null
+      kioskMarker: null,
+      crossFloorRoute: null
     };
 
     function r4(value) {
@@ -1962,6 +1963,7 @@
       $("#route_diff_level").hide();
       $("#continue-overlay").hide();
       state.routeHighlighted = [];
+      state.crossFloorRoute = null;
 
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
@@ -2218,15 +2220,33 @@
       showResult(lvlResults[1], lvlResults[0]);
 
       if (lvlResults[0] === 1) {
+        state.crossFloorRoute = {
+          segments: [lvlResults[1], lvlResults[2]],
+          currentIndex: 0
+        };
+
+        function updateCrossFloorToggle() {
+          if (!state.crossFloorRoute) return;
+          const currentSegment = state.crossFloorRoute.segments[state.crossFloorRoute.currentIndex];
+          const otherSegment = state.crossFloorRoute.segments[state.crossFloorRoute.currentIndex === 0 ? 1 : 0];
+          const currentFloor = LEVELS[currentSegment[3]].code;
+          const otherFloor = LEVELS[otherSegment[3]].code;
+          const label = state.crossFloorRoute.currentIndex === 0
+            ? "<i class='fas fa-arrow-right'></i> Go to " + otherFloor + "-Level"
+            : "<i class='fas fa-undo'></i> Return to " + currentFloor + "-Level";
+          $("#continue_result").html(label);
+          $("#continue-overlay button").html(label);
+        }
+
         $("#continue_result").off("click").on("click", function () {
-          showResult(lvlResults[2], 1);
-          $("#continue-overlay").hide();
+          if (!state.crossFloorRoute) return;
+          state.crossFloorRoute.currentIndex = state.crossFloorRoute.currentIndex === 0 ? 1 : 0;
+          showResult(state.crossFloorRoute.segments[state.crossFloorRoute.currentIndex], 1);
+          updateCrossFloorToggle();
         });
         $("#route_diff_level").show();
         $("#continue-overlay").show();
-        const nextFloor = "EDCB"[lvlResults[2][3]];
-        $("#continue_result").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
-        $("#continue-overlay button").html("<i class='fas fa-arrow-right'></i> Continue to " + nextFloor + "-Level");
+        updateCrossFloorToggle();
       } else {
         $("#continue-overlay").hide();
       }
