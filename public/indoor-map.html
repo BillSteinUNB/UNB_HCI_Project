@@ -1634,7 +1634,7 @@
 
     function splitKeyword(keyword) {
       const raw = String(keyword || "").trim();
-      const match = raw.match(/^([EDCB])-Lvl:\s*(.+)$/i);
+      const match = raw.match(/^([EDCB])-(?:Lvl|Level):\s*(.+)$/i);
       if (match) {
         return { levelHint: levelNameFromCode(match[1].toUpperCase()), name: match[2].trim() };
       }
