@@ -370,8 +370,8 @@
       width: min(390px, calc(100vw - 32px)) !important;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding: 18px;
+      gap: 20px;
+      padding: 22px;
       border: 1px solid var(--panel-border) !important;
       border-radius: var(--radius-xl);
       background: var(--panel) !important;
@@ -388,30 +388,22 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 16px;
-    }
-
-    .panel-kicker {
-      margin: 0 0 4px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent-strong);
+      padding-bottom: 4px;
     }
 
     .panel-title {
       margin: 0;
-      font-size: 34px;
-      line-height: 0.95;
+      font-size: 32px;
+      line-height: 1.02;
       font-weight: 800;
       letter-spacing: -0.04em;
     }
 
     .panel-subtitle {
-      margin: 10px 0 0;
-      max-width: 250px;
+      margin: 12px 0 0;
+      max-width: 280px;
       font-size: 14px;
-      line-height: 1.45;
+      line-height: 1.55;
       color: var(--panel-muted);
     }
 
@@ -434,7 +426,7 @@
     .kiosk-toolbar {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
 
     .kiosk-tab {
@@ -472,7 +464,7 @@
     .level-cubes {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
       padding: 0 !important;
       margin: 0;
       background: transparent !important;
@@ -522,6 +514,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      padding-top: 4px;
     }
 
     #nav01,
@@ -531,11 +524,13 @@
       height: 100%;
       overflow-y: auto;
       padding-right: 6px !important;
+      padding-top: 6px;
+      padding-bottom: 12px;
       background: transparent !important;
     }
 
     .pane-title {
-      margin: 0 0 8px;
+      margin: 0 0 12px;
       font-size: 22px;
       font-weight: 750;
       letter-spacing: -0.03em;
@@ -543,18 +538,18 @@
 
     .pane-copy,
     .location-copy {
-      margin: 0 0 14px;
+      margin: 0 0 20px;
       font-size: 14px;
       line-height: 1.5;
       color: var(--panel-muted);
     }
 
     .kiosk-card {
-      padding: 18px;
+      padding: 20px;
       border-radius: 20px;
       background: rgba(248, 250, 252, 0.96);
       border: 1px solid rgba(148, 163, 184, 0.18);
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
 
     .kiosk-card:last-child {
@@ -563,7 +558,7 @@
 
     .field-label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.12em;
@@ -621,7 +616,7 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 16px;
     }
 
     .kiosk-btn,
@@ -671,7 +666,7 @@
     }
 
     #route_diff_level {
-      margin-top: 14px;
+      margin-top: 18px;
     }
 
     #continue_result {
@@ -680,8 +675,8 @@
 
     .routing-rows {
       display: grid;
-      gap: 14px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 18px;
     }
 
     .route-row {
@@ -1055,7 +1050,6 @@
     <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" id="mySidebar">
       <div class="panel-brand">
         <div>
-          <p class="panel-kicker">UNB Engineering</p>
           <h1 class="panel-title">Information Technology Center Map</h1>
           <p class="panel-subtitle">Search for rooms, browse spaces, or build directions across floors.</p>
         </div>
@@ -1095,7 +1089,7 @@
           <div class="kiosk-card">
             <label class="field-label" for="searchBox">Search target</label>
             <div class="kiosk-input-row">
-              <input type="text" id="searchBox" placeholder="Room, office, lab, or person">
+              <input type="text" id="searchBox" placeholder="Room or name">
               <input type="reset" id="srchReset" value="x">
             </div>
             <div class="kiosk-action-row">
@@ -1122,7 +1116,7 @@
               <div class="route-row">
                 <div class="route-pill">From</div>
                 <div class="kiosk-input-row">
-                  <input type="text" id="from" placeholder="Starting point or entrance">
+                  <input type="text" id="from" placeholder="Start point">
                   <input type="reset" id="fromReset" value="x">
                 </div>
               </div>
@@ -1134,7 +1128,7 @@
               <div class="route-row">
                 <div class="route-pill">To</div>
                 <div class="kiosk-input-row">
-                  <input type="text" id="to" placeholder="Destination">
+                  <input type="text" id="to" placeholder="Room or place">
                   <input type="reset" id="toReset" value="x">
                 </div>
               </div>
