@@ -1232,10 +1232,10 @@
       </p>
       <p style="font-size:14px; font-family:'Courier New'; text-align:center">
         Other entrances:<br>
-        <a href="#" onclick="$('#from').val('C-Lvl: Windsor St (other)'); $('#to').focus();">Windsor St (other)</a><br>
-        <a href="#" onclick="$('#from').val('C-Lvl: Dineen Dr (CS)'); $('#to').focus();">Dineen Dr (CS)</a><br>
-        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (Eng)'); $('#to').focus();">Dineen Dr (Eng.)</a><br>
-        <a href="#" onclick="$('#from').val('D-Lvl: Dineen Dr (other)'); $('#to').focus();">Dineen Dr (other)</a>
+        <a href="#" onclick="$('#from').val('C-Level: Windsor St (other)'); $('#to').focus();">Windsor St (other)</a><br>
+        <a href="#" onclick="$('#from').val('C-Level: Dineen Dr (CS)'); $('#to').focus();">Dineen Dr (CS)</a><br>
+        <a href="#" onclick="$('#from').val('D-Level: Dineen Dr (Eng)'); $('#to').focus();">Dineen Dr (Eng.)</a><br>
+        <a href="#" onclick="$('#from').val('D-Level: Dineen Dr (other)'); $('#to').focus();">Dineen Dr (other)</a>
       </p>
     </div>
 
@@ -1437,7 +1437,7 @@
 
     const imageBounds = [[0, 0], [90, 180]];
     const imageOverlayOptions = { opacity: 0.85 };
-    const DEFAULT_ORIGIN = "C-Lvl: Windsor St (CS)";
+    const DEFAULT_ORIGIN = "C-Level: Windsor St (CS)";
 
     const state = {
       maps: [],
@@ -1945,7 +1945,7 @@
         state.kioskMarker = null;
       }
 
-      const match = findFeatureByKeyword("C-Lvl: Windsor St (CS)", 2);
+      const match = findFeatureByKeyword("C-Level: Windsor St (CS)", 2);
       if (!match || match.levelIdx !== 2) return;
 
       const props = match.feature.properties || {};
@@ -2520,7 +2520,7 @@
             if (val === null || val === undefined) return;
             const text = String(val).trim();
             if (!text) return;
-            const prefixed = level.code + "-Lvl: " + text;
+            const prefixed = level.code + "-Level: " + text;
             if (!names.has(prefixed)) {
               names.set(prefixed, { value: prefixed, label: prefixed });
             }
