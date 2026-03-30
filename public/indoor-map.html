@@ -1257,19 +1257,6 @@
 
           <div id="routeStatus"></div>
 
-          <div class="kiosk-card">
-      <p style="font-size:13px; color:#666; margin-bottom:8px; text-align:center">
-        <i class="fas fa-location-arrow" style="color:#009688"></i> <strong>You are here:</strong> Windsor St (CS) — C Level
-      </p>
-      <p style="font-size:14px; font-family:'Courier New'; text-align:center">
-        Other entrances:<br>
-        <a href="#" onclick="$('#from').val('C-Level: Windsor St (other)'); $('#to').focus();">Windsor St (other)</a><br>
-        <a href="#" onclick="$('#from').val('C-Level: Dineen Dr (CS)'); $('#to').focus();">Dineen Dr (CS)</a><br>
-        <a href="#" onclick="$('#from').val('D-Level: Dineen Dr (Eng)'); $('#to').focus();">Dineen Dr (Eng.)</a><br>
-        <a href="#" onclick="$('#from').val('D-Level: Dineen Dr (other)'); $('#to').focus();">Dineen Dr (other)</a>
-      </p>
-    </div>
-
       </div>
     </div>
     </div>
@@ -1285,8 +1272,8 @@
             <div class="item active"><div id="CLevel"></div></div>
             <div class="item"><div id="BLevel"></div></div>
           </div>
-          <div id="continue-overlay">
-            <button type="button" onclick="document.getElementById('continue_result').click(); this.parentNode.style.display='none';">
+        <div id="continue-overlay">
+            <button type="button" onclick="document.getElementById('continue_result').click();">
               <i class="fas fa-arrow-right"></i> Continue to next floor
             </button>
           </div>
