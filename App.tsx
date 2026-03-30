@@ -10,12 +10,18 @@ import { ScreenName, NavigationState } from './types';
 
 const App: React.FC = () => {
   const [history, setHistory] = useState<NavigationState[]>([{ screen: ScreenName.HOME }]);
+  const [lastHomeSelection, setLastHomeSelection] = useState<ScreenName | null>(null);
 
   const currentNav = history[history.length - 1];
   const currentScreen = currentNav.screen;
   const currentParams = currentNav.params;
 
-  const navigateTo = (screen: ScreenName, params?: any) => setHistory(prev => [...prev, { screen, params }]);
+  const navigateTo = (screen: ScreenName, params?: any) => {
+    if (currentScreen === ScreenName.HOME && screen !== ScreenName.HOME) {
+      setLastHomeSelection(screen);
+    }
+    setHistory(prev => [...prev, { screen, params }]);
+  };
   const goBack = () => history.length > 1 && setHistory(prev => prev.slice(0, -1));
   const goHome = () => setHistory([{ screen: ScreenName.HOME }]);
 
@@ -32,13 +38,13 @@ const App: React.FC = () => {
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case ScreenName.HOME: return <HomeScreen onNavigate={navigateTo} />;
+      case ScreenName.HOME: return <HomeScreen onNavigate={navigateTo} lastSelected={lastHomeSelection} />;
       case ScreenName.FIND_ROOM: return <FindRoomScreen onNavigate={navigateTo} />;
       case ScreenName.ROOM_DETAIL: return <RoomDetailScreen roomId={currentParams?.roomId} onNavigate={navigateTo} />;
       case ScreenName.EVENTS: return <EventsScreen onNavigate={navigateTo} />;
       case ScreenName.BUILDING_INFO: return <BuildingInfoScreen />;
       case ScreenName.MAPS: return <MapScreen destination={currentParams?.destination} floor={currentParams?.floor} officeTitle={currentParams?.officeTitle} professor={currentParams?.professor} />;
-      default: return <HomeScreen onNavigate={navigateTo} />;
+      default: return <HomeScreen onNavigate={navigateTo} lastSelected={lastHomeSelection} />;
     }
   };
 
