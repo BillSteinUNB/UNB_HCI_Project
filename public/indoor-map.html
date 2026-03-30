@@ -1479,7 +1479,7 @@
     }
 
     function resetFromToKiosk() {
-      $("#from").val(DEFAULT_ORIGIN);
+      $("#from").val(formatInputDisplay(DEFAULT_ORIGIN));
       $("#routeStatus").html("");
       clearRouteLayers();
     }
@@ -1654,11 +1654,20 @@
 
     function splitKeyword(keyword) {
       const raw = String(keyword || "").trim();
-      const match = raw.match(/^([EDCB])-(?:Lvl|Level):\s*(.+)$/i);
+      const match = raw.match(/^([EDCB])(?:-(?:Lvl|Level)|:)\s*(.+)$/i);
       if (match) {
         return { levelHint: levelNameFromCode(match[1].toUpperCase()), name: match[2].trim() };
       }
       return { levelHint: null, name: raw };
+    }
+
+    function formatInputDisplay(value) {
+      const raw = String(value || "").trim();
+      const match = raw.match(/^([EDCB])-(?:Lvl|Level):\s*(.+)$/i);
+      if (match) {
+        return match[1].toUpperCase() + ": " + match[2].trim();
+      }
+      return raw;
     }
 
     function toComparable(value) {
@@ -1760,7 +1769,7 @@
         const props = match.feature.properties || {};
         const label = String(props.PlaceName || props.PersonName || candidate);
 
-        $("#to").val(label);
+        $("#to").val(formatInputDisplay(getFeatureDisplayName(match.levelIdx, match.feature) || label));
         searchFunc([Number(props.OBJECTID), match.levelIdx]);
         switchLevel(match.levelIdx);
         openNav("nav02");
@@ -1769,7 +1778,7 @@
         return;
       }
 
-      $("#to").val(destination || officeTitle || professor);
+      $("#to").val(formatInputDisplay(destination || officeTitle || professor));
       if (preferredLevelIdx !== null) {
         switchLevel(preferredLevelIdx);
       }
@@ -2302,8 +2311,8 @@
       if (!originMatch) return;
 
       $("#routeStatus").html("");
-      $("#from").val(DEFAULT_ORIGIN);
-      $("#to").val(getFeatureDisplayName(levelIdx, feature) || String(props.PlaceName || props.PersonName || ""));
+      $("#from").val(formatInputDisplay(DEFAULT_ORIGIN));
+      $("#to").val(formatInputDisplay(getFeatureDisplayName(levelIdx, feature) || String(props.PlaceName || props.PersonName || "")));
       openNav("nav02");
       routeBetweenMatches(originMatch, { levelIdx: levelIdx, feature: feature });
     }
@@ -2314,9 +2323,9 @@
       const match = findFeatureByKeyword(text);
       if (!match) return;
       searchFunc([Number(match.feature.properties.OBJECTID), match.levelIdx]);
-      $("#to").val(getFeatureDisplayName(match.levelIdx, match.feature) || text);
+      $("#to").val(formatInputDisplay(getFeatureDisplayName(match.levelIdx, match.feature) || text));
       if (!$("#from").val().trim()) {
-        $("#from").val(DEFAULT_ORIGIN);
+        $("#from").val(formatInputDisplay(DEFAULT_ORIGIN));
       }
     }
 
@@ -2404,7 +2413,7 @@
     }
 
     function clearFunc() {
-      $("#from").val(DEFAULT_ORIGIN);
+      $("#from").val(formatInputDisplay(DEFAULT_ORIGIN));
       $("#to").val("");
       resetStyle();
       state.routeMode = "Steps";
@@ -2607,11 +2616,14 @@
         minLength: 0,
         appendTo: "#mySidebar",
         select: function (event, ui) {
+          $(this).val(formatInputDisplay(ui.item.value));
           if (this.id === "to") {
             previewDestination(ui.item.value);
           }
+          return false;
         },
         change: function () {
+          $(this).val(formatInputDisplay($(this).val()));
           if (this.id === "to") {
             previewDestination(this.value);
           }
