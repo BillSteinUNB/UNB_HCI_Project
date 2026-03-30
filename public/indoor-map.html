@@ -683,30 +683,6 @@
       float: none !important;
     }
 
-    #steps_lift {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      width: 100%;
-    }
-
-    #steps_lift .btn {
-      min-height: 56px;
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.24);
-      background: rgba(241, 245, 249, 0.92);
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 700;
-      box-shadow: none;
-    }
-
-    #steps_lift .btn.active {
-      background: rgba(255, 255, 255, 0.98);
-      color: #0f172a;
-      border-color: rgba(255, 255, 255, 0.85);
-    }
-
     .quick-entry-list {
       display: grid;
       gap: 8px;
@@ -818,6 +794,51 @@
       font-weight: 800;
       letter-spacing: 0.02em;
       cursor: pointer;
+    }
+
+    #routeModeToggle {
+      position: fixed;
+      top: 96px;
+      right: 92px;
+      z-index: 1090;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--soft-shadow);
+    }
+
+    #routeModeToggle.visible {
+      display: inline-flex;
+    }
+
+    .route-mode-btn {
+      min-width: 128px;
+      min-height: 58px;
+      padding: 0 18px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 18px;
+      background: rgba(241, 245, 249, 0.96);
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .route-mode-btn.active {
+      background: linear-gradient(180deg, #14b8a6 0%, #0f9d8f 100%);
+      color: #ffffff;
+      border-color: rgba(15, 157, 143, 0.4);
+      box-shadow: 0 14px 28px rgba(15, 157, 143, 0.22);
     }
 
     #labelToggle .toggle-copy {
@@ -1106,6 +1127,10 @@
       #labelToggle {
         right: 88px;
       }
+
+      #routeModeToggle {
+        right: 88px;
+      }
     }
 
     @media screen and (max-width: 720px) {
@@ -1115,6 +1140,18 @@
         min-width: 150px;
         height: 56px;
         padding: 0 16px;
+        font-size: 14px;
+      }
+
+      #routeModeToggle {
+        top: 80px;
+        right: 82px;
+        padding: 8px;
+      }
+
+      .route-mode-btn {
+        min-width: 108px;
+        min-height: 52px;
         font-size: 14px;
       }
 
@@ -1163,6 +1200,16 @@
       <span class="toggle-copy">Labels On</span>
       <span class="toggle-switch" aria-hidden="true"></span>
     </button>
+    <div id="routeModeToggle">
+      <button type="button" class="route-mode-btn active" id="routeModeSteps" onclick="setRouteMode('Steps')">
+        <i class="fas fa-walking"></i>
+        <span>Stairs</span>
+      </button>
+      <button type="button" class="route-mode-btn" id="routeModeLift" onclick="setRouteMode('Lift')">
+        <i class="fas fa-person-booth"></i>
+        <span>Elevator</span>
+      </button>
+    </div>
 
     <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" id="mySidebar">
       <div class="panel-brand">
@@ -1201,11 +1248,6 @@
                   <input type="reset" id="toReset" value="x">
                 </div>
               </div>
-            </div>
-
-            <div id="steps_lift" class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active" id="lsteps"><input id="steps" value="Steps" name="mode" type="radio" checked> Stairs</label>
-              <label class="btn btn-default" id="llift"><input id="lift" value="Lift" name="mode" type="radio"> Elevator</label>
             </div>
 
             <div class="kiosk-action-row">
@@ -1451,7 +1493,9 @@
       diffLevelPayload: null,
       labelsVisible: false,
       kioskMarker: null,
-      crossFloorRoute: null
+      crossFloorRoute: null,
+      routeMode: "Steps",
+      activeRouteRequest: null
     };
 
     function r4(value) {
@@ -1859,7 +1903,46 @@
       setLabelsVisible(!state.labelsVisible);
     }
 
-    function resetStyle() {
+    function updateRouteModeToggle() {
+      const toggle = document.getElementById("routeModeToggle");
+      if (!toggle) return;
+
+      const stepsButton = document.getElementById("routeModeSteps");
+      const liftButton = document.getElementById("routeModeLift");
+      if (stepsButton) stepsButton.classList.toggle("active", state.routeMode === "Steps");
+      if (liftButton) liftButton.classList.toggle("active", state.routeMode === "Lift");
+    }
+
+    function showRouteModeToggle() {
+      const toggle = document.getElementById("routeModeToggle");
+      if (!toggle) return;
+      toggle.classList.add("visible");
+      updateRouteModeToggle();
+    }
+
+    function hideRouteModeToggle() {
+      const toggle = document.getElementById("routeModeToggle");
+      if (!toggle) return;
+      toggle.classList.remove("visible");
+    }
+
+    function setRouteMode(mode) {
+      const nextMode = mode === "Lift" ? "Lift" : "Steps";
+      if (state.routeMode === nextMode && state.activeRouteRequest) {
+        updateRouteModeToggle();
+        return;
+      }
+
+      state.routeMode = nextMode;
+      updateRouteModeToggle();
+
+      if (state.activeRouteRequest) {
+        routeBetweenMatches(state.activeRouteRequest.fromMatch, state.activeRouteRequest.toMatch);
+      }
+    }
+
+    function resetStyle(options) {
+      const preserveActiveRoute = !!(options && options.preserveActiveRoute);
       $("#directions").hide();
       $("#srchResult").html("");
       $("#routeStatus").html("");
@@ -1867,6 +1950,10 @@
       $("#continue-overlay").hide();
       state.routeHighlighted = [];
       state.crossFloorRoute = null;
+      if (!preserveActiveRoute) {
+        state.activeRouteRequest = null;
+        hideRouteModeToggle();
+      }
 
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
@@ -2116,11 +2203,12 @@
     }
 
     function routeFunc(payload) {
-      resetStyle();
+      resetStyle({ preserveActiveRoute: true });
       clearRouteLayers();
 
       const lvlResults = payload;
       showResult(lvlResults[1], lvlResults[0]);
+      showRouteModeToggle();
 
       if (lvlResults[0] === 1) {
         state.crossFloorRoute = {
@@ -2163,7 +2251,7 @@
         return;
       }
 
-      const mode = $("input[name='mode']:checked").val();
+      const mode = state.routeMode;
       const fromProps = fromMatch.feature.properties || {};
       const toProps = toMatch.feature.properties || {};
       const fromLvl = fromMatch.levelIdx;
@@ -2178,6 +2266,7 @@
           return;
         }
         const pathLatLng = path.map(function (pt) { return [pt[1], pt[0]]; });
+        state.activeRouteRequest = { fromMatch: fromMatch, toMatch: toMatch };
         routeFunc([0, [null, pathLatLng, [fromProps.OBJECTID, toProps.OBJECTID], fromLvl]]);
         return;
       }
@@ -2225,6 +2314,7 @@
 
       const fromSeg = [null, fromPathLatLng, [fromProps.OBJECTID, viaLayerFrom.feature.properties.OBJECTID], fromLvl];
       const toSeg = [null, toPathLatLng, [viaFeatureTo.properties.OBJECTID, toProps.OBJECTID], toLvl];
+      state.activeRouteRequest = { fromMatch: fromMatch, toMatch: toMatch };
       routeFunc([1, fromSeg, toSeg]);
     }
 
@@ -2341,6 +2431,8 @@
       $("#from").val(DEFAULT_ORIGIN);
       $("#to").val("");
       resetStyle();
+      state.routeMode = "Steps";
+      updateRouteModeToggle();
       switchLevel(2);
       openNav("nav02");
       $("#to").focus();
