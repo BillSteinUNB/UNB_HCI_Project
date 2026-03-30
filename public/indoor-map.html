@@ -290,10 +290,7 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background:
-        radial-gradient(circle at top left, rgba(15, 157, 143, 0.2), transparent 32%),
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 30%),
-        linear-gradient(180deg, #f5f8fb 0%, #e8eef4 100%);
+      background: #ffffff;
       font-family: "Segoe UI", "Helvetica Neue", sans-serif;
       color: #0f172a;
     }
@@ -317,7 +314,7 @@
     }
 
     .leaflet-container {
-      background: rgba(255, 255, 255, 0.85);
+      background: #ffffff;
       border: none;
       border-radius: 30px;
     }
@@ -1757,6 +1754,15 @@
       state.routeHighlighted = [];
     }
 
+    function getMapFitOptions(maxZoom) {
+      var desktop = window.innerWidth > 980;
+      return {
+        paddingTopLeft: desktop ? [420, 28] : [20, 20],
+        paddingBottomRight: desktop ? [28, 28] : [20, 20],
+        maxZoom: maxZoom
+      };
+    }
+
     function resetStyle() {
       $("#directions").hide();
       $("#srchResult").html("");
@@ -1768,7 +1774,7 @@
       for (let i = 0; i < LEVELS.length; i += 1) {
         if (state.blockLayers[i]) state.blockLayers[i].setStyle(styleFunc());
         if (state.maps[i]) {
-          state.maps[i].fitBounds([[0, 0], [90, 180]], { padding: [10, 10] });
+          state.maps[i].fitBounds(imageBounds, getMapFitOptions(3.4));
           state.maps[i].closePopup();
         }
       }
@@ -1917,7 +1923,7 @@
       $("#cmap").carousel(levelIdx);
       updateActiveLevelUI(levelIdx);
       levelMap.invalidateSize();
-      if (bounds) levelMap.fitBounds(bounds, { maxZoom: 4 });
+      if (bounds) levelMap.fitBounds(bounds, getMapFitOptions(4));
 
       if (!isContinueSegment) {
         w3_close();
@@ -1972,7 +1978,7 @@
       $("#cmap").carousel(levelIdx);
       updateActiveLevelUI(levelIdx);
       levelMap.invalidateSize();
-      levelMap.fitBounds(layer.getBounds().pad(0.5), { maxZoom: 4 });
+      levelMap.fitBounds(layer.getBounds().pad(0.5), getMapFitOptions(4));
 
       let content = getFeatureLabelContent(props);
 
@@ -2254,7 +2260,7 @@
       for (const level of LEVELS) {
         const map = L.map(level.mapId, levelConfig);
         L.imageOverlay(level.floor, imageBounds, imageOverlayOptions).addTo(map);
-        map.fitBounds(imageBounds, { padding: [10, 10] });
+        map.fitBounds(imageBounds, getMapFitOptions(3.4));
         state.maps[level.idx] = map;
 
         L.control.zoom({ position: 'topright' }).addTo(map);
