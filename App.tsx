@@ -35,7 +35,7 @@ const App: React.FC = () => {
       case ScreenName.HOME: return <HomeScreen onNavigate={navigateTo} />;
       case ScreenName.FIND_ROOM: return <FindRoomScreen onNavigate={navigateTo} />;
       case ScreenName.ROOM_DETAIL: return <RoomDetailScreen roomId={currentParams?.roomId} onNavigate={navigateTo} />;
-      case ScreenName.EVENTS: return <EventsScreen />;
+      case ScreenName.EVENTS: return <EventsScreen onNavigate={navigateTo} />;
       case ScreenName.BUILDING_INFO: return <BuildingInfoScreen />;
       case ScreenName.MAPS: return <MapScreen destination={currentParams?.destination} floor={currentParams?.floor} officeTitle={currentParams?.officeTitle} professor={currentParams?.professor} />;
       default: return <HomeScreen onNavigate={navigateTo} />;
