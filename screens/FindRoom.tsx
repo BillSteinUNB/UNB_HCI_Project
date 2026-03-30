@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { ScreenContainer, StatusBadge } from '../components/UI';
 import { MOCK_ROOMS } from '../constants';
-import { Search, X, User, ChevronDown, Users, Monitor, Calendar, Delete, CornerDownLeft, Space } from 'lucide-react';
+import { Search, X, User, ChevronDown, Users, Monitor, Calendar, Delete, MapPinned } from 'lucide-react';
+import { ScreenName, Room } from '../types';
 
 const KEYBOARD_ROWS = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
@@ -41,7 +42,30 @@ const OnScreenKeyboard: React.FC<{
   </div>
 );
 
-export const FindRoomScreen: React.FC = () => {
+interface FindRoomProps {
+  onNavigate: (screen: ScreenName, params?: any) => void;
+}
+
+const buildDestinationLabel = (room: Room): string => {
+  const cleaned = room.number.replace(/\s+/g, '').toUpperCase();
+  const prefix = room.floor.toUpperCase();
+
+  if (/^IT[BCDE]/.test(cleaned)) {
+    return `${cleaned[2]}${cleaned.slice(3)}`;
+  }
+
+  if (/^\d+[A-Z]?$/.test(cleaned)) {
+    return `${prefix}${cleaned}`;
+  }
+
+  if (cleaned.startsWith(`${prefix}-`)) {
+    return `${prefix}${cleaned.slice(2)}`;
+  }
+
+  return cleaned;
+};
+
+export const FindRoomScreen: React.FC<FindRoomProps> = ({ onNavigate }) => {
   const [query, setQuery] = useState('');
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
   const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
@@ -71,6 +95,14 @@ export const FindRoomScreen: React.FC = () => {
   const handleKey = (key: string) => setQuery(prev => prev + key);
   const handleBackspace = () => setQuery(prev => prev.slice(0, -1));
   const handleClearSearch = () => { setQuery(''); setSelectedFloor(null); };
+  const handleGetDirections = (room: Room) => {
+    onNavigate(ScreenName.MAPS, {
+      destination: buildDestinationLabel(room),
+      floor: room.floor,
+      officeTitle: room.officeTitle,
+      professor: room.professor,
+    });
+  };
 
   return (
     <ScreenContainer className="bg-gray-50 flex flex-col h-full">
@@ -182,6 +214,16 @@ export const FindRoomScreen: React.FC = () => {
                         ) : (
                           <div className="text-gray-400 text-base">No classes scheduled today.</div>
                         )}
+                      </div>
+
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => handleGetDirections(room)}
+                          className="inline-flex items-center gap-2 px-5 py-3 bg-[#C41230] text-white rounded-xl font-bold text-base shadow-sm active:bg-[#9E0E27] active:scale-95 transition-all"
+                        >
+                          <MapPinned className="w-5 h-5" />
+                          <span>Get Directions</span>
+                        </button>
                       </div>
                     </div>
                   )}

@@ -1646,6 +1646,37 @@
       return String(value || "").trim().toLowerCase();
     }
 
+    function normalizeLoose(value) {
+      return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function buildKeywordVariants(target, levelIdx) {
+      const variants = new Set();
+      const trimmed = String(target || "").trim();
+      const normalized = trimmed.toUpperCase().replace(/\s+/g, "");
+      if (!trimmed) return [];
+
+      variants.add(trimmed);
+      variants.add(normalizeLoose(trimmed));
+      variants.add(normalized);
+
+      if (/^IT[BCDE]/.test(normalized)) {
+        variants.add(normalized[2] + normalized.slice(3));
+      }
+
+      if (levelIdx !== null && levelIdx !== undefined) {
+        const levelCode = LEVELS[levelIdx].code;
+        if (/^\d+[A-Z]?$/.test(normalized)) {
+          variants.add(levelCode + normalized);
+        }
+        if (normalized.startsWith(levelCode + "-")) {
+          variants.add(levelCode + normalized.slice(2));
+        }
+      }
+
+      return Array.from(variants).filter(Boolean);
+    }
+
     function findFeatureByKeyword(keyword, preferredLevelIdx = null) {
       const parsed = splitKeyword(keyword);
       const target = toComparable(parsed.name);
@@ -1659,16 +1690,83 @@
       for (const lvl of order) {
         const levelData = state.dataByLevel[lvl];
         if (!levelData) continue;
+        const keywordVariants = buildKeywordVariants(parsed.name, lvl);
+        const comparableVariants = new Set(keywordVariants.map(toComparable));
+        const normalizedVariants = new Set(keywordVariants.map(normalizeLoose));
+
         for (const feature of levelData.blocks.features) {
           const p = feature.properties || {};
-          const vals = [p.PlaceName, p.PersonName, p.PlaceNode].map(toComparable);
-          if (vals.includes(target)) {
+          const rawVals = [p.PlaceName, p.PersonName, p.PlaceNode].filter(function (val) {
+            return val !== null && val !== undefined && String(val).trim() !== "";
+          });
+          const comparableVals = rawVals.map(toComparable);
+          const normalizedVals = rawVals.map(normalizeLoose);
+
+          if (comparableVals.includes(target)) {
+            return { levelIdx: lvl, feature: feature };
+          }
+
+          if (comparableVals.some(function (val) { return comparableVariants.has(val); })) {
+            return { levelIdx: lvl, feature: feature };
+          }
+
+          if (normalizedVals.some(function (val) { return normalizedVariants.has(val); })) {
+            return { levelIdx: lvl, feature: feature };
+          }
+
+          if (normalizedVals.some(function (val) {
+            if (!val) return false;
+            for (const candidate of normalizedVariants) {
+              if (candidate.length < 4) continue;
+              if (val.includes(candidate) || candidate.includes(val)) return true;
+            }
+            return false;
+          })) {
             return { levelIdx: lvl, feature: feature };
           }
         }
       }
 
       return null;
+    }
+
+    function applyDestinationFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const floor = String(params.get("floor") || "").trim().toUpperCase();
+      const destination = String(params.get("destination") || "").trim();
+      const officeTitle = String(params.get("officeTitle") || "").trim();
+      const professor = String(params.get("professor") || "").trim();
+      const preferredLevelIdx = floor ? levelNameFromCode(floor) : null;
+
+      const candidates = [destination, officeTitle, professor].filter(function (value, index, arr) {
+        return value && arr.indexOf(value) === index;
+      });
+
+      if (candidates.length === 0) return;
+
+      for (const candidate of candidates) {
+        const match = findFeatureByKeyword(candidate, preferredLevelIdx);
+        if (!match) continue;
+
+        const props = match.feature.properties || {};
+        const label = String(props.PlaceName || props.PersonName || candidate);
+
+        $("#to").val(label);
+        searchFunc([Number(props.OBJECTID), match.levelIdx]);
+        switchLevel(match.levelIdx);
+        openNav("nav02");
+        $("#from").focus();
+        activeInput = document.getElementById("from");
+        return;
+      }
+
+      $("#to").val(destination || officeTitle || professor);
+      if (preferredLevelIdx !== null) {
+        switchLevel(preferredLevelIdx);
+      }
+      openNav("nav02");
+      $("#from").focus();
+      activeInput = document.getElementById("from");
     }
 
     function getPlacePoint(levelIdx, placeNode) {
@@ -2358,6 +2456,7 @@
             if (state.maps[i]) state.maps[i].invalidateSize();
           }
           switchLevel(2);
+          applyDestinationFromQuery();
         })
         .catch(function (err) {
           $("#srchResult").html("Failed to load map data. " + String(err));
