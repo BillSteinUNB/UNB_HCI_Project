@@ -1983,6 +1983,29 @@
       return content;
     }
 
+    function getFeatureDisplayName(levelIdx, feature) {
+      const props = (feature && feature.properties) || {};
+      const baseName = String(props.PlaceName || props.PersonName || "").trim();
+      if (!baseName) return "";
+      return LEVELS[levelIdx].code + "-Level: " + baseName.replace("Steps", "Stairs").replace("Lift", "Elevator");
+    }
+
+    function isSearchableFeature(feature) {
+      const props = (feature && feature.properties) || {};
+      const placeName = String(props.PlaceName || "").trim();
+      const personName = String(props.PersonName || "").trim();
+      const placeType = String(props.PlaceType || "").trim();
+
+      if (personName) return true;
+      if (!placeName) return false;
+
+      const normalized = placeName.toLowerCase();
+      if (normalized === "<steps>" || normalized.indexOf("steps") === 0 || normalized.indexOf("lift") === 0) return false;
+      if (placeType.indexOf("Facility,male") === 0 || placeType.indexOf("Facility,female") === 0) return false;
+
+      return true;
+    }
+
     function getFeatureCenter(feature) {
       const geom = feature && feature.geometry;
       if (!geom || !Array.isArray(geom.coordinates)) return null;
@@ -2045,7 +2068,7 @@
       state.kioskMarker = marker;
     }
 
-    function onEachFeatureFunc(feature, layer) {
+    function onEachFeatureFunc(levelIdx, feature, layer) {
       const props = feature.properties || {};
       layer.bindTooltip(props.PlaceName || "", {
         permanent: true,
@@ -2074,6 +2097,9 @@
         if (state.routeHighlighted.indexOf(evt.target) !== -1) return;
         evt.target.setStyle(styleFunc());
         layer.closePopup();
+      });
+      layer.on("click", function () {
+        routeFromKioskToFeature(levelIdx, feature);
       });
     }
 
@@ -2208,6 +2234,91 @@
       w3_close();
     }
 
+    function routeBetweenMatches(fromMatch, toMatch) {
+      if (!fromMatch || !toMatch) {
+        $("#routeStatus").html("Unable to resolve origin or destination.");
+        return;
+      }
+
+      const mode = $("input[name='mode']:checked").val();
+      const fromProps = fromMatch.feature.properties || {};
+      const toProps = toMatch.feature.properties || {};
+      const fromLvl = fromMatch.levelIdx;
+      const toLvl = toMatch.levelIdx;
+
+      if (fromLvl === toLvl) {
+        const start = getPlacePoint(fromLvl, fromProps.PlaceNode);
+        const end = getPlacePoint(fromLvl, toProps.PlaceNode);
+        const path = aStar(fromLvl, start, end);
+        if (!path) {
+          $("#routeStatus").html("No route found on selected level.");
+          return;
+        }
+        const pathLatLng = path.map(function (pt) { return [pt[1], pt[0]]; });
+        routeFunc([0, [null, pathLatLng, [fromProps.OBJECTID, toProps.OBJECTID], fromLvl]]);
+        return;
+      }
+
+      const viaObjectId = findNearestFacility(fromLvl, Number(fromProps.PlaceNode), String(mode));
+      if (!viaObjectId) {
+        $("#routeStatus").html("No cross-floor connector found for selected mode.");
+        return;
+      }
+
+      const viaLayerFrom = getLeafletLayerByObjectId(fromLvl, viaObjectId);
+      if (!viaLayerFrom) {
+        $("#routeStatus").html("Connector not found on origin level.");
+        return;
+      }
+
+      const viaName = viaLayerFrom.feature.properties.PlaceName;
+      const toLevelData = state.dataByLevel[toLvl];
+      let viaFeatureTo = null;
+      for (const feature of toLevelData.blocks.features) {
+        if (String((feature.properties || {}).PlaceName || "") === String(viaName || "")) {
+          viaFeatureTo = feature;
+          break;
+        }
+      }
+      if (!viaFeatureTo) {
+        const fallbackViaOid = findNearestFacility(toLvl, Number(toProps.PlaceNode), String(mode));
+        const viaLayerFallback = getLeafletLayerByObjectId(toLvl, fallbackViaOid);
+        viaFeatureTo = viaLayerFallback ? viaLayerFallback.feature : null;
+      }
+      if (!viaFeatureTo) {
+        $("#routeStatus").html("Connector not found on destination level.");
+        return;
+      }
+
+      const fromPath = aStar(fromLvl, getPlacePoint(fromLvl, fromProps.PlaceNode), getPlacePoint(fromLvl, viaLayerFrom.feature.properties.PlaceNode));
+      const toPath = aStar(toLvl, getPlacePoint(toLvl, viaFeatureTo.properties.PlaceNode), getPlacePoint(toLvl, toProps.PlaceNode));
+      if (!fromPath || !toPath) {
+        $("#routeStatus").html("No route available for this floor transfer.");
+        return;
+      }
+
+      const fromPathLatLng = fromPath.map(function (pt) { return [pt[1], pt[0]]; });
+      const toPathLatLng = toPath.map(function (pt) { return [pt[1], pt[0]]; });
+
+      const fromSeg = [null, fromPathLatLng, [fromProps.OBJECTID, viaLayerFrom.feature.properties.OBJECTID], fromLvl];
+      const toSeg = [null, toPathLatLng, [viaFeatureTo.properties.OBJECTID, toProps.OBJECTID], toLvl];
+      routeFunc([1, fromSeg, toSeg]);
+    }
+
+    function routeFromKioskToFeature(levelIdx, feature) {
+      const props = (feature && feature.properties) || {};
+      if (!props.PlaceNode) return;
+
+      const originMatch = findFeatureByKeyword("C-Lvl: Windsor St (CS)", 2);
+      if (!originMatch) return;
+
+      $("#routeStatus").html("");
+      $("#from").val("C-Level: Windsor St (CS)");
+      $("#to").val(getFeatureDisplayName(levelIdx, feature) || String(props.PlaceName || props.PersonName || ""));
+      openNav("nav02");
+      routeBetweenMatches(originMatch, { levelIdx: levelIdx, feature: feature });
+    }
+
     function searchFunc(input) {
       const parsed = Array.isArray(input) ? input : JSON.parse(String(input).replace(/'/g, '"'));
       const objectId = parsed[0];
@@ -2276,7 +2387,7 @@
 
       // Auto-navigate to routing panel with "To" pre-filled
       openNav("nav02");
-      $("#to").val($("#searchBox").val());
+      $("#to").val(getFeatureDisplayName(match.levelIdx, match.feature) || $("#searchBox").val());
       $("#from").focus();
       activeInput = document.getElementById("from");
     }
@@ -2285,79 +2396,10 @@
       $("#routeStatus").html("");
       const fromText = $("#from").val();
       const toText = $("#to").val();
-      const mode = $("input[name='mode']:checked").val();
 
       const fromMatch = findFeatureByKeyword(fromText);
       const toMatch = findFeatureByKeyword(toText);
-
-      if (!fromMatch || !toMatch) {
-        $("#routeStatus").html("Unable to resolve origin or destination.");
-        return;
-      }
-
-      const fromProps = fromMatch.feature.properties || {};
-      const toProps = toMatch.feature.properties || {};
-      const fromLvl = fromMatch.levelIdx;
-      const toLvl = toMatch.levelIdx;
-
-      if (fromLvl === toLvl) {
-        const start = getPlacePoint(fromLvl, fromProps.PlaceNode);
-        const end = getPlacePoint(fromLvl, toProps.PlaceNode);
-        const path = aStar(fromLvl, start, end);
-        if (!path) {
-          $("#routeStatus").html("No route found on selected level.");
-          return;
-        }
-        const pathLatLng = path.map(function (pt) { return [pt[1], pt[0]]; });
-        routeFunc([0, [null, pathLatLng, [fromProps.OBJECTID, toProps.OBJECTID], fromLvl]]);
-        return;
-      }
-
-      const viaObjectId = findNearestFacility(fromLvl, Number(fromProps.PlaceNode), String(mode));
-      if (!viaObjectId) {
-        $("#routeStatus").html("No cross-floor connector found for selected mode.");
-        return;
-      }
-
-      const viaLayerFrom = getLeafletLayerByObjectId(fromLvl, viaObjectId);
-      if (!viaLayerFrom) {
-        $("#routeStatus").html("Connector not found on origin level.");
-        return;
-      }
-
-      const viaName = viaLayerFrom.feature.properties.PlaceName;
-      const toLevelData = state.dataByLevel[toLvl];
-      let viaFeatureTo = null;
-      for (const feature of toLevelData.blocks.features) {
-        if (String((feature.properties || {}).PlaceName || "") === String(viaName || "")) {
-          viaFeatureTo = feature;
-          break;
-        }
-      }
-      if (!viaFeatureTo) {
-        const fallbackViaOid = findNearestFacility(toLvl, Number(toProps.PlaceNode), String(mode));
-        const viaLayerFallback = getLeafletLayerByObjectId(toLvl, fallbackViaOid);
-        viaFeatureTo = viaLayerFallback ? viaLayerFallback.feature : null;
-      }
-
-      if (!viaFeatureTo) {
-        $("#routeStatus").html("Connector not found on destination level.");
-        return;
-      }
-
-      const fromPath = aStar(fromLvl, getPlacePoint(fromLvl, fromProps.PlaceNode), getPlacePoint(fromLvl, viaLayerFrom.feature.properties.PlaceNode));
-      const toPath = aStar(toLvl, getPlacePoint(toLvl, viaFeatureTo.properties.PlaceNode), getPlacePoint(toLvl, toProps.PlaceNode));
-      if (!fromPath || !toPath) {
-        $("#routeStatus").html("No route available for this floor transfer.");
-        return;
-      }
-
-      const fromPathLatLng = fromPath.map(function (pt) { return [pt[1], pt[0]]; });
-      const toPathLatLng = toPath.map(function (pt) { return [pt[1], pt[0]]; });
-
-      const fromSeg = [null, fromPathLatLng, [fromProps.OBJECTID, viaLayerFrom.feature.properties.OBJECTID], fromLvl];
-      const toSeg = [null, toPathLatLng, [viaFeatureTo.properties.OBJECTID, toProps.OBJECTID], toLvl];
-      routeFunc([1, fromSeg, toSeg]);
+      routeBetweenMatches(fromMatch, toMatch);
     }
 
     function clearFunc() {
@@ -2527,7 +2569,7 @@
         const blockData = state.dataByLevel[level.idx].blocks;
         const blockLayer = L.geoJSON(blockData, {
           style: styleFunc,
-          onEachFeature: onEachFeatureFunc
+          onEachFeature: function (feature, layer) { onEachFeatureFunc(level.idx, feature, layer); }
         }).addTo(state.maps[level.idx]);
         state.blockLayers[level.idx] = blockLayer;
       }
@@ -2537,18 +2579,26 @@
       const fields = [];
       for (const level of LEVELS) {
         const featureSet = state.dataByLevel[level.idx].blocks.features;
-        const names = new Set();
+        const names = new Map();
         for (const feature of featureSet) {
+          if (!isSearchableFeature(feature)) continue;
           const p = feature.properties || {};
-          [p.PlaceName, p.PersonName, p.PlaceNode].forEach(function (val) {
+          const displayName = getFeatureDisplayName(level.idx, feature);
+          if (displayName) {
+            names.set(displayName, { value: displayName, label: displayName });
+          }
+          [p.PlaceName, p.PersonName].forEach(function (val) {
             if (val === null || val === undefined) return;
             const text = String(val).trim();
             if (!text) return;
-            names.add(text);
+            const prefixed = level.code + "-Lvl: " + text;
+            if (!names.has(prefixed)) {
+              names.set(prefixed, { value: prefixed, label: prefixed });
+            }
           });
         }
-        for (const value of names) {
-          fields.push({ value: level.name + ": " + value, label: value });
+        for (const field of names.values()) {
+          fields.push(field);
         }
       }
 
