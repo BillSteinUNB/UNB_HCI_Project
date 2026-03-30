@@ -271,6 +271,843 @@
       min-width: 52px;
     }
   </style>
+  <style>
+    :root {
+      --panel: rgba(15, 23, 42, 0.92);
+      --panel-border: rgba(148, 163, 184, 0.22);
+      --panel-muted: #cbd5e1;
+      --text: #f8fafc;
+      --accent: #0f9d8f;
+      --accent-strong: #0a7c72;
+      --accent-soft: rgba(15, 157, 143, 0.18);
+      --card-shadow: 0 22px 48px rgba(15, 23, 42, 0.26);
+      --soft-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+      --radius-xl: 28px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(15, 157, 143, 0.2), transparent 32%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 30%),
+        linear-gradient(180deg, #f5f8fb 0%, #e8eef4 100%);
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      color: #0f172a;
+    }
+
+    body {
+      position: relative;
+      background-color: transparent !important;
+    }
+
+    a,
+    a:hover,
+    a:focus {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    label {
+      font-family: inherit;
+    }
+
+    .leaflet-container {
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+      border-radius: 30px;
+    }
+
+    .leaflet-control-zoom,
+    .easy-button-container {
+      border: none !important;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .leaflet-bar a,
+    .leaflet-bar button,
+    .easy-button-button .button-state {
+      width: 52px !important;
+      height: 52px !important;
+      line-height: 52px !important;
+      border: 0 !important;
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #0f172a !important;
+      border-radius: 16px !important;
+      font-size: 20px !important;
+      font-weight: 700 !important;
+    }
+
+    .leaflet-top.leaflet-right {
+      top: 18px;
+      right: 18px;
+    }
+
+    .leaflet-tooltip.labelstyle {
+      display: none;
+      padding: 4px 8px;
+      border: 0;
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+      background: rgba(255, 255, 255, 0.92);
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    #kiosk-shell {
+      position: relative;
+      height: 100%;
+    }
+
+    #mySidebar {
+      position: fixed !important;
+      top: 16px;
+      left: 16px;
+      bottom: 16px;
+      width: min(390px, calc(100vw - 32px)) !important;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--panel-border) !important;
+      border-radius: var(--radius-xl);
+      background: var(--panel) !important;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      z-index: 1100;
+      overflow: hidden;
+      color: var(--text);
+    }
+
+    .panel-brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .panel-kicker {
+      margin: 0 0 4px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 34px;
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .panel-subtitle {
+      margin: 10px 0 0;
+      max-width: 250px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--panel-muted);
+    }
+
+    .panel-badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(15, 157, 143, 0.14);
+      border: 1px solid rgba(45, 212, 191, 0.28);
+      color: #ccfbf1;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .kiosk-toolbar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kiosk-tab {
+      appearance: none;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border-radius: 18px;
+      min-height: 72px;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: 0.18s ease;
+    }
+
+    .kiosk-tab i {
+      font-size: 20px;
+    }
+
+    .kiosk-tab.active-tab,
+    .kiosk-tab:hover,
+    .kiosk-tab:focus {
+      background: linear-gradient(180deg, rgba(15, 157, 143, 0.95), rgba(10, 124, 114, 0.98));
+      border-color: rgba(45, 212, 191, 0.42);
+      color: #ffffff;
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .level-cubes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 !important;
+      margin: 0;
+      background: transparent !important;
+      border-bottom: 0 !important;
+    }
+
+    .level-cubes a {
+      min-height: 72px;
+      max-width: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--text);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      transition: 0.18s ease;
+    }
+
+    .level-cubes a::after {
+      content: attr(data-label);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--panel-muted);
+    }
+
+    .level-cubes a.active-level {
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 0 0 2px rgba(15, 157, 143, 0.18);
+    }
+
+    .level-cubes a.active-level::after {
+      color: var(--accent-strong);
+    }
+
+    .panel-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #nav01,
+    #nav02,
+    #nav03 {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 6px !important;
+      background: transparent !important;
+    }
+
+    .pane-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+    }
+
+    .pane-copy,
+    .location-copy {
+      margin: 0 0 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--panel-muted);
+    }
+
+    .kiosk-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      margin-bottom: 14px;
+    }
+
+    .kiosk-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+    }
+
+    .kiosk-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type=text] {
+      width: 100% !important;
+      min-height: 58px;
+      padding: 0 18px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      font-size: 20px;
+      font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    input[type=text]:focus {
+      outline: none;
+      border-color: rgba(56, 189, 248, 0.8);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.16);
+    }
+
+    input[type="reset"] {
+      position: static;
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(239, 68, 68, 0.16);
+      color: #fecaca;
+      cursor: pointer;
+      font-size: 22px;
+      font-weight: 800;
+      transition: 0.18s ease;
+    }
+
+    input[type="reset"]:hover,
+    input[type="reset"]:focus {
+      background: rgba(239, 68, 68, 0.26);
+      outline: none;
+    }
+
+    .kiosk-action-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .kiosk-btn,
+    #continue_result,
+    #continue-overlay button {
+      appearance: none;
+      border: 0 !important;
+      border-radius: 18px !important;
+      min-height: 58px;
+      padding: 0 20px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #14b8a6 0%, #0f9d8f 100%) !important;
+      color: #ffffff !important;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      box-shadow: 0 16px 32px rgba(15, 157, 143, 0.28);
+      transition: 0.18s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .kiosk-btn:hover,
+    .kiosk-btn:focus,
+    #continue_result:hover,
+    #continue_result:focus,
+    #continue-overlay button:hover,
+    #continue-overlay button:focus {
+      transform: translateY(-1px);
+      filter: saturate(1.06);
+      outline: none;
+    }
+
+    .kiosk-btn.secondary {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: var(--text) !important;
+      box-shadow: none;
+    }
+
+    .kiosk-btn.success {
+      background: linear-gradient(180deg, #38bdf8 0%, #2563eb 100%) !important;
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.24);
+    }
+
+    #route_diff_level {
+      margin-top: 14px;
+    }
+
+    #continue_result {
+      width: 100%;
+    }
+
+    .routing-rows {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .route-row {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .route-pill {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(15, 157, 143, 0.16);
+      color: #99f6e4;
+    }
+
+    #swap {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 20px;
+      margin: 2px auto 4px;
+      float: none !important;
+    }
+
+    #steps_lift {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    #steps_lift .btn {
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: none;
+    }
+
+    #steps_lift .btn.active {
+      background: rgba(255, 255, 255, 0.98);
+      color: #0f172a;
+      border-color: rgba(255, 255, 255, 0.85);
+    }
+
+    .quick-entry-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .quick-entry-list a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    #srchResult,
+    #routeStatus {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    #srchResult:empty,
+    #routeStatus:empty {
+      display: none;
+    }
+
+    .categories,
+    .categories ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .categories ul::before,
+    .categories ul > li::before {
+      content: none;
+    }
+
+    .categories > li > a,
+    .categories ul > li > a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 14px;
+      margin-bottom: 8px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    #cat {
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    #cat .metismenu ul {
+      padding-left: 12px;
+    }
+
+    #panelToggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1090;
+      width: 64px;
+      height: 64px;
+      border: 0;
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #ffffff;
+      font-size: 22px;
+      box-shadow: var(--soft-shadow);
+      cursor: pointer;
+    }
+
+    .kiosk-stage {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+
+    .map-shell {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+
+    .w3-main {
+      margin: 0 !important;
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #cmap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .carousel-inner,
+    .carousel-inner .item,
+    #ELevel,
+    #DLevel,
+    #CLevel,
+    #BLevel {
+      height: 100vh !important;
+      width: 100%;
+    }
+
+    .carousel-inner .item {
+      transition-duration: 0.35s;
+    }
+
+    .map-hero {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      min-width: 340px;
+      max-width: min(540px, calc(100vw - 470px));
+      padding: 16px 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .map-hero-copy {
+      min-width: 0;
+    }
+
+    .map-hero-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+
+    .map-hero-subtitle {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .map-hero-badge {
+      flex-shrink: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    #continue-overlay {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 1000;
+    }
+
+    #myOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.36);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1080;
+    }
+
+    #kiosk-keyboard {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translate(-50%, calc(100% + 30px));
+      width: min(760px, calc(100vw - 40px));
+      padding: 18px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      box-shadow: 0 24px 56px rgba(15, 23, 42, 0.28);
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 1150;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    #kiosk-keyboard.visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .keyboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .keyboard-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #475569;
+    }
+
+    .keyboard-dismiss {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .kb-key {
+      min-width: 56px;
+      min-height: 56px;
+      padding: 0 8px;
+      font-size: 20px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      cursor: pointer;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kb-key:hover,
+    .kb-key:active {
+      background: #dff6f2;
+    }
+
+    .kb-key.kb-space {
+      flex: 1;
+      max-width: 360px;
+    }
+
+    .kb-key.kb-bksp {
+      min-width: 72px;
+      font-size: 16px;
+    }
+
+    body.keyboard-open #continue-overlay {
+      bottom: 330px;
+    }
+
+    body.panel-open #panelToggle {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media screen and (max-width: 1200px) {
+      .map-hero {
+        max-width: calc(100vw - 40px);
+      }
+    }
+
+    @media screen and (max-width: 980px) {
+      #mySidebar {
+        width: calc(100vw - 24px) !important;
+        left: 12px;
+        top: 12px;
+        bottom: 12px;
+      }
+
+      .map-hero {
+        min-width: 0;
+        width: calc(100vw - 130px);
+        left: auto;
+        right: 16px;
+        transform: none;
+      }
+    }
+
+    @media screen and (max-width: 720px) {
+      .map-hero {
+        display: none;
+      }
+
+      .kiosk-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .kiosk-action-row {
+        grid-template-columns: 1fr;
+      }
+
+      .route-row {
+        grid-template-columns: 1fr;
+      }
+
+      .route-pill {
+        width: 100%;
+      }
+
+      .kb-row {
+        gap: 6px;
+      }
+
+      .kb-key {
+        min-width: 42px;
+        min-height: 48px;
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body style="background-color:#F5F5F5">
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -280,71 +1117,128 @@
   <script src="https://cdn.jsdelivr.net/npm/metismenu@3.0.4/dist/metisMenu.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2.4.0/src/easy-button.js"></script>
 
-  <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" style="z-index:3;width:355px;border:1px groove black" id="mySidebar">
-    <div class="w3-bar w3-black w3-center">
-      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav01i" onclick="openNav('nav01')"><i class="fas fa-search"></i><span class="sr-only">Search</span></a>
-      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav02i" onclick="openNav('nav02')"><i class="fas fa-directions"></i><span class="sr-only">Routing</span></a>
-      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" id="nav03i" onclick="openNav('nav03')"><i class="fas fa-sitemap"></i><span class="sr-only">Categories</span></a>
-      <a class="w3-bar-item w3-button" style="width:25%" href="javascript:void(0)" onclick="clearFunc()"><i class="fas fa-eraser"></i><span class="sr-only">Clear</span></a>
-    </div>
+  <div id="kiosk-shell">
+    <button type="button" id="panelToggle" onclick="w3_open()">
+      <i class="fas fa-bars"></i>
+      <span class="sr-only">Open controls</span>
+    </button>
 
-    <div class="level-cubes">
-      <a href="javascript:void(0)" id="lvlB" onclick="switchLevel(3)">B</a>
-      <a href="javascript:void(0)" id="lvlC" class="active-level" onclick="switchLevel(2)">C</a>
-      <a href="javascript:void(0)" id="lvlD" onclick="switchLevel(1)">D</a>
-      <a href="javascript:void(0)" id="lvlE" onclick="switchLevel(0)">E</a>
-    </div>
-
-    <div id="nav01" class="w3-bar-block" style="background-color:#F5F5F5; padding:0 15px">
-      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
-      <br>
-      <p style="font-size:15px; font-family:'Courier New'">(Enter at least two characters)</p>
-      Search for <br> <input type="text" id="searchBox"> <input type="reset" id="srchReset" value="x">
-      <br><br>
-      <button type="button" class="btn btn-primary" onclick="search()">Find</button> &emsp;
-      <button type="button" class="btn btn-success" id="directions" hidden>Directions</button>
-      <br><br>
-      <div id="srchResult"></div>
-    </div>
-
-    <div id="nav02" style="background-color:#F5F5F5; padding:0 15px">
-      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
-      <br>
-      <p style="font-size:13px; font-family:'Courier New'; text-align:left; color:#888; margin-bottom:8px">(Enter at least two characters)</p>
-      <div style="text-align:left">
-        <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
-          <label style="font-weight:700; min-width:38px; font-size:14px">From</label>
-          <input type="text" id="from" style="flex:1">
-          <input type="reset" id="fromReset" value="x" style="flex-shrink:0">
+    <div class="w3-sidebar w3-collapse w3-white w3-animate-left w3-large" id="mySidebar">
+      <div class="panel-brand">
+        <div>
+          <p class="panel-kicker">UNB Engineering</p>
+          <h1 class="panel-title">Head Hall Map</h1>
+          <p class="panel-subtitle">Touch-first indoor wayfinding for rooms, entrances, and cross-floor routes.</p>
         </div>
-        <div style="display:flex; justify-content:flex-end; padding:2px 0">
-          <i class="fas fa-exchange-alt fa-rotate-90" id="swap" style="cursor:pointer; font-size:18px; color:#666; padding:4px 8px; border-radius:4px; background:#e0e0e0"></i>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px; margin-top:4px">
-          <label style="font-weight:700; min-width:38px; font-size:14px">To</label>
-          <input type="text" id="to" style="flex:1">
-          <input type="reset" id="toReset" value="x" style="flex-shrink:0">
+        <div class="panel-badge">
+          <i class="fas fa-location-arrow"></i>
+          Kiosk Mode
         </div>
       </div>
-      <br>
-      <div style="display:flex; justify-content:center">
-        <div id="steps_lift" class="btn-group" data-toggle="buttons">
-          <label class="btn btn-default active" id="lsteps"><input id="steps" value="Steps" name="mode" type="radio" checked> Stairs</label>
-          <label class="btn btn-default" id="llift"><input id="lift" value="Lift" name="mode" type="radio"> Elevator</label>
-        </div>
-        &emsp;
-        <button type="button" class="btn btn-primary" onclick="routeFromTo()">Show Route</button>
-      </div>
-      <br><br>
-      <div id="route_diff_level" style="display:none">
-        <button type="button" id="continue_result" class="btn btn-lg" style="width:100%;font-size:16px;padding:12px;background:#2196F3;color:#fff;border:none;border-radius:6px;">Continue</button>
-      </div>
-      <br><br>
-      <div style="margin:10px 0">
-        <button type="button" class="btn btn-success btn-lg" style="width:100%;font-size:16px;padding:12px" onclick="$('#from').val('C-Lvl: Windsor St (CS)'); $('#to').focus();">
-          <i class="fas fa-map-marker-alt"></i> From Here (Kiosk)
+
+      <div class="kiosk-toolbar">
+        <button type="button" class="kiosk-tab" id="nav01i" onclick="openNav('nav01')">
+          <i class="fas fa-search"></i>
+          <span>Find</span>
+        </button>
+        <button type="button" class="kiosk-tab" id="nav02i" onclick="openNav('nav02')">
+          <i class="fas fa-directions"></i>
+          <span>Route</span>
+        </button>
+        <button type="button" class="kiosk-tab" id="nav03i" onclick="openNav('nav03')">
+          <i class="fas fa-sitemap"></i>
+          <span>Browse</span>
+        </button>
+        <button type="button" class="kiosk-tab" onclick="clearFunc()">
+          <i class="fas fa-eraser"></i>
+          <span>Reset</span>
         </button>
       </div>
+
+      <div class="level-cubes">
+        <a href="javascript:void(0)" id="lvlB" data-label="B Level" onclick="switchLevel(3)">B</a>
+        <a href="javascript:void(0)" id="lvlC" data-label="C Level" class="active-level" onclick="switchLevel(2)">C</a>
+        <a href="javascript:void(0)" id="lvlD" data-label="D Level" onclick="switchLevel(1)">D</a>
+        <a href="javascript:void(0)" id="lvlE" data-label="E Level" onclick="switchLevel(0)">E</a>
+      </div>
+
+      <div class="panel-content">
+        <div id="nav01" class="w3-bar-block">
+          <h2 class="pane-title">Find a room or person</h2>
+          <p class="pane-copy">Start typing a room number, office, lab, or faculty name. The keyboard appears when a field is active.</p>
+
+          <div class="kiosk-card">
+            <label class="field-label" for="searchBox">Search target</label>
+            <div class="kiosk-input-row">
+              <input type="text" id="searchBox" placeholder="Room, office, lab, or person">
+              <input type="reset" id="srchReset" value="x">
+            </div>
+            <div class="kiosk-action-row">
+              <button type="button" class="kiosk-btn" onclick="search()">
+                <i class="fas fa-search"></i>
+                Find
+              </button>
+              <button type="button" class="kiosk-btn secondary" id="directions" hidden>
+                <i class="fas fa-directions"></i>
+                Route There
+              </button>
+            </div>
+          </div>
+
+          <div id="srchResult"></div>
+        </div>
+
+        <div id="nav02">
+          <h2 class="pane-title">Build a route</h2>
+          <p class="pane-copy">Choose where to start and where to go. The route will stay centered on the map while instructions stay compact.</p>
+
+          <div class="kiosk-card">
+            <div class="routing-rows">
+              <div class="route-row">
+                <div class="route-pill">From</div>
+                <div class="kiosk-input-row">
+                  <input type="text" id="from" placeholder="Starting point or entrance">
+                  <input type="reset" id="fromReset" value="x">
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:center">
+                <i class="fas fa-exchange-alt fa-rotate-90" id="swap"></i>
+              </div>
+
+              <div class="route-row">
+                <div class="route-pill">To</div>
+                <div class="kiosk-input-row">
+                  <input type="text" id="to" placeholder="Destination">
+                  <input type="reset" id="toReset" value="x">
+                </div>
+              </div>
+            </div>
+
+            <div id="steps_lift" class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default active" id="lsteps"><input id="steps" value="Steps" name="mode" type="radio" checked> Stairs</label>
+              <label class="btn btn-default" id="llift"><input id="lift" value="Lift" name="mode" type="radio"> Elevator</label>
+            </div>
+
+            <div class="kiosk-action-row">
+              <button type="button" class="kiosk-btn" onclick="routeFromTo()">
+                <i class="fas fa-route"></i>
+                Show Route
+              </button>
+              <button type="button" class="kiosk-btn success" onclick="$('#from').val('C-Lvl: Windsor St (CS)'); $('#to').focus();">
+                <i class="fas fa-map-marker-alt"></i>
+                Start Here
+              </button>
+            </div>
+          </div>
+
+          <div id="route_diff_level" style="display:none">
+            <button type="button" id="continue_result">Continue</button>
+          </div>
+
+          <div id="routeStatus"></div>
+
+          <div class="kiosk-card">
       <p style="font-size:13px; color:#666; margin-bottom:8px; text-align:center">
         <i class="fas fa-location-arrow" style="color:#009688"></i> <strong>You are here:</strong> Windsor St (CS) — C Level
       </p>
@@ -357,25 +1251,31 @@
       </p>
     </div>
 
-    <div id="nav03" style="background-color:#F5F5F5; padding:0 15px">
-      <a class="w3-button w3-hover-teal w3-hide-large w3-large w3-right" href="javascript:void(0)" onclick="w3_close()"><i class="fas fa-arrow-left"></i><span class="sr-only">Back</span></a>
-      <div id="cat" style="overflow-y: auto">
-        <br>
-        <ul class="categories">
-          <div id="catContent"></div>
-        </ul>
+        <div id="nav03">
+          <h2 class="pane-title">Browse spaces</h2>
+          <p class="pane-copy">Explore rooms by level and type, then jump directly to the location on the map.</p>
+          <div id="cat">
+            <ul class="categories">
+              <div id="catContent"></div>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
-  <div class="w3-main" style="margin-left:385px; margin-right:10px;">
-    <div class="w3-top w3-theme w3-large w3-hide-large">
-      <i class="fa fa-bars w3-button w3-teal w3-xlarge" onclick="w3_open()"></i>
-      HeadHall - indoorGIS
     </div>
 
-    <div class="container">
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" id="myOverlay"></div>
+    <div class="w3-main kiosk-stage">
+      <div class="map-shell">
+        <div class="map-hero">
+          <div class="map-hero-copy">
+            <p class="map-hero-title">Interactive Wayfinding</p>
+            <p class="map-hero-subtitle">Search, browse, or route without leaving the map.</p>
+          </div>
+          <div class="map-hero-badge" id="activeLevelLabel">C Level</div>
+        </div>
+
+        <div class="container">
         <div id="cmap" class="carousel slide" data-ride="carousel" data-interval="false">
           <div class="carousel-inner">
             <div class="item"><div id="ELevel"></div></div>
@@ -392,6 +1292,12 @@
 
         <!-- Virtual Keyboard -->
         <div id="kiosk-keyboard">
+          <div class="keyboard-head">
+            <p class="keyboard-title">Type on kiosk keyboard</p>
+            <button type="button" class="keyboard-dismiss" onclick="hideKeyboard()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <div class="kb-row">
             <button class="kb-key" onclick="kioskKey('1')">1</button>
             <button class="kb-key" onclick="kioskKey('2')">2</button>
@@ -428,7 +1334,7 @@
             <button class="kb-key" onclick="kioskKey('L')">L</button>
           </div>
           <div class="kb-row">
-            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">Bksp</button>
             <button class="kb-key" onclick="kioskKey('Z')">Z</button>
             <button class="kb-key" onclick="kioskKey('X')">X</button>
             <button class="kb-key" onclick="kioskKey('C')">C</button>
@@ -436,13 +1342,15 @@
             <button class="kb-key" onclick="kioskKey('B')">B</button>
             <button class="kb-key" onclick="kioskKey('N')">N</button>
             <button class="kb-key" onclick="kioskKey('M')">M</button>
-            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">⌫</button>
+            <button class="kb-key kb-bksp" onclick="kioskKey('BACKSPACE')">Bksp</button>
           </div>
           <div class="kb-row">
             <button class="kb-key kb-space" onclick="kioskKey(' ')">SPACE</button>
           </div>
         </div>
 
+        </div>
+      </div>
     </div>
   </div>
 
@@ -456,7 +1364,27 @@
   <script>
     /* ── Kiosk virtual keyboard ── */
     var activeInput = null;
-    $(document).on("focus", "input[type=text]", function() { activeInput = this; });
+
+    function showKeyboard() {
+      document.body.classList.add("keyboard-open");
+      $("#kiosk-keyboard").addClass("visible");
+    }
+
+    function hideKeyboard() {
+      document.body.classList.remove("keyboard-open");
+      $("#kiosk-keyboard").removeClass("visible");
+      if (activeInput) activeInput.blur();
+    }
+
+    $(document).on("focus", "input[type=text]", function () {
+      activeInput = this;
+      showKeyboard();
+    });
+
+    $(document).on("mousedown touchstart", function (evt) {
+      if ($(evt.target).closest("#kiosk-keyboard, input[type=text], .ui-autocomplete").length) return;
+      hideKeyboard();
+    });
 
     function kioskKey(char) {
       if (!activeInput) activeInput = document.getElementById("searchBox");
@@ -468,7 +1396,12 @@
       } else {
         activeInput.value += char;
       }
-      $(activeInput).trigger("input").autocomplete("search", activeInput.value);
+
+      const $input = $(activeInput);
+      $input.trigger("input");
+      if ($input.data("ui-autocomplete")) {
+        $input.autocomplete("search", activeInput.value);
+      }
     }
 
     const LEVELS = [
@@ -477,6 +1410,29 @@
       { code: "C", idx: 2, name: "C-Lvl", mapId: "CLevel", floor: "/floorplans/C_Level.jpg" },
       { code: "B", idx: 3, name: "B-Lvl", mapId: "BLevel", floor: "/floorplans/B_Level.jpg" }
     ];
+
+    function setPanelOpen(isOpen) {
+      document.body.classList.toggle("panel-open", isOpen);
+      document.getElementById("mySidebar").style.display = isOpen ? "flex" : "none";
+      document.getElementById("myOverlay").style.display = isOpen && window.innerWidth <= 980 ? "block" : "none";
+    }
+
+    function syncPanelState() {
+      setPanelOpen(document.body.classList.contains("panel-open"));
+    }
+
+    function updateActiveLevelUI(levelIdx) {
+      const ids = ["lvlE", "lvlD", "lvlC", "lvlB"];
+      for (var i = 0; i < ids.length; i++) {
+        document.getElementById(ids[i]).classList.remove("active-level");
+      }
+      document.getElementById(ids[levelIdx]).classList.add("active-level");
+
+      var badge = document.getElementById("activeLevelLabel");
+      if (badge) {
+        badge.textContent = LEVELS[levelIdx].code + " Level";
+      }
+    }
 
     const levelConfig = {
       minZoom: 1,
@@ -786,6 +1742,7 @@
     function resetStyle() {
       $("#directions").hide();
       $("#srchResult").html("");
+      $("#routeStatus").html("");
       $("#route_diff_level").hide();
       $("#continue-overlay").hide();
       state.routeHighlighted = [];
@@ -848,11 +1805,7 @@
         state.maps[levelIdx].invalidateSize();
       }
       resetStyle();
-      var ids = ["lvlE", "lvlD", "lvlC", "lvlB"];
-      for (var i = 0; i < ids.length; i++) {
-        document.getElementById(ids[i]).classList.remove("active-level");
-      }
-      document.getElementById(ids[levelIdx]).classList.add("active-level");
+      updateActiveLevelUI(levelIdx);
     }
 
     function makeBoundsFromFeaturesAndPath(features, pathLatLng) {
@@ -944,6 +1897,7 @@
       const bounds = makeBoundsFromFeaturesAndPath(features, pathLatLng);
 
       $("#cmap").carousel(levelIdx);
+      updateActiveLevelUI(levelIdx);
       levelMap.invalidateSize();
       if (bounds) levelMap.fitBounds(bounds, { maxZoom: 4 });
 
@@ -998,6 +1952,7 @@
       layer.openPopup();
 
       $("#cmap").carousel(levelIdx);
+      updateActiveLevelUI(levelIdx);
       levelMap.invalidateSize();
       levelMap.fitBounds(layer.getBounds().pad(0.5), { maxZoom: 4 });
 
@@ -1049,6 +2004,7 @@
     }
 
     function routeFromTo() {
+      $("#routeStatus").html("");
       const fromText = $("#from").val();
       const toText = $("#to").val();
       const mode = $("input[name='mode']:checked").val();
@@ -1057,7 +2013,7 @@
       const toMatch = findFeatureByKeyword(toText);
 
       if (!fromMatch || !toMatch) {
-        $("#srchResult").html("Unable to resolve origin or destination.");
+        $("#routeStatus").html("Unable to resolve origin or destination.");
         return;
       }
 
@@ -1071,7 +2027,7 @@
         const end = getPlacePoint(fromLvl, toProps.PlaceNode);
         const path = aStar(fromLvl, start, end);
         if (!path) {
-          $("#srchResult").html("No route found on selected level.");
+          $("#routeStatus").html("No route found on selected level.");
           return;
         }
         const pathLatLng = path.map(function (pt) { return [pt[1], pt[0]]; });
@@ -1081,13 +2037,13 @@
 
       const viaObjectId = findNearestFacility(fromLvl, Number(fromProps.PlaceNode), String(mode));
       if (!viaObjectId) {
-        $("#srchResult").html("No cross-floor connector found for selected mode.");
+        $("#routeStatus").html("No cross-floor connector found for selected mode.");
         return;
       }
 
       const viaLayerFrom = getLeafletLayerByObjectId(fromLvl, viaObjectId);
       if (!viaLayerFrom) {
-        $("#srchResult").html("Connector not found on origin level.");
+        $("#routeStatus").html("Connector not found on origin level.");
         return;
       }
 
@@ -1107,14 +2063,14 @@
       }
 
       if (!viaFeatureTo) {
-        $("#srchResult").html("Connector not found on destination level.");
+        $("#routeStatus").html("Connector not found on destination level.");
         return;
       }
 
       const fromPath = aStar(fromLvl, getPlacePoint(fromLvl, fromProps.PlaceNode), getPlacePoint(fromLvl, viaLayerFrom.feature.properties.PlaceNode));
       const toPath = aStar(toLvl, getPlacePoint(toLvl, viaFeatureTo.properties.PlaceNode), getPlacePoint(toLvl, toProps.PlaceNode));
       if (!fromPath || !toPath) {
-        $("#srchResult").html("No route available for this floor transfer.");
+        $("#routeStatus").html("No route available for this floor transfer.");
         return;
       }
 
@@ -1137,24 +2093,23 @@
     }
 
     function w3_open() {
-      document.getElementById("mySidebar").style.display = "block";
-      document.getElementById("myOverlay").style.display = "block";
-      $("#from").focus();
+      setPanelOpen(true);
     }
 
     function w3_close() {
-      document.getElementById("mySidebar").style.display = "none";
-      document.getElementById("myOverlay").style.display = "none";
+      setPanelOpen(false);
+      hideKeyboard();
     }
 
     function openNav(id) {
       const navs = ["nav01", "nav02", "nav03"];
       for (let i = 0; i < navs.length; i += 1) {
         document.getElementById(navs[i]).style.display = "none";
-        $("#" + navs[i] + "i").css("background-color", "black");
+        $("#" + navs[i] + "i").removeClass("active-tab");
       }
       document.getElementById(id).style.display = "block";
-      $("#" + id + "i").css("background-color", "#ccc");
+      $("#" + id + "i").addClass("active-tab");
+      setPanelOpen(true);
     }
 
     function categoryHtmlByLevel(levelIdx, title) {
@@ -1365,6 +2320,7 @@
     $(function () {
       openNav("nav01");
       initMaps();
+      $(window).on("resize", syncPanelState);
 
       $("#srchReset").click(function () {
         $("#searchBox").val("").focus();
